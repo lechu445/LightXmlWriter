@@ -1,0 +1,24 @@
+﻿<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:req="http://request.rentacar.karve.com/">
+  <soap:Header>
+    <req:Password>some password</req:Password>
+    <req:User>some login</req:User>
+  </soap:Header>
+  <soap:Body>
+    <req:CreateReserveRequest>
+      <ReserveId>True</ReserveId>
+      <ClientName>MR John Doe</ClientName>
+      <PickUpOfficeId>88</PickUpOfficeId>
+      <PickUpDate>2017-10-10</PickUpDate>
+      <PickUpTime>09:00</PickUpTime>
+      <DropOffOfficeId>89</DropOffOfficeId>
+      <DropOffDate>2017-10-15</DropOffDate>
+      <DropOffTime>10:00</DropOffTime>
+      <ConceptsIds>1</ConceptsIds>
+      <ConceptsIds>2</ConceptsIds>
+      <ConceptsIds>3</ConceptsIds>
+      <Flight>LH12344</Flight>
+      <CarTypeId>FDMR</CarTypeId>
+      <RateId>FTI TEST</RateId>
+    </req:CreateReserveRequest>
+  </soap:Body>
+</soap:Envelope>
