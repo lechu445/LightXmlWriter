@@ -54,8 +54,8 @@ namespace XmlTools.Tests
       using (var subject = new LightXmlWriter(new StringWriter(sb)))
       {
         subject.WriteStartElement("Person");
-        subject.WriteAttribute("name", "John");
-        subject.WriteAttribute("age", -132);
+        subject.WriteAttributeString("name", "John");
+        subject.WriteAttributeString("age", -132);
         subject.WriteEndElement("Person");
       }
       Assert.Equal("<Person name=\"John\" age=\"-132\"/>", sb.ToString());
@@ -68,7 +68,7 @@ namespace XmlTools.Tests
       using (var subject = new LightXmlWriter(new StringWriter(sb)))
       {
         subject.WriteStartElement("Person");
-        subject.WriteAttribute("name", null);
+        subject.WriteAttributeString("name", null);
         subject.WriteEndElement("Person");
       }
       Assert.Equal("<Person name=\"\"/>", sb.ToString());
@@ -155,7 +155,7 @@ namespace XmlTools.Tests
       {
         subject.WriteStartElement("Person");
         subject.WriteStartElement("Details");
-        subject.WriteAttribute("weight", "76");
+        subject.WriteAttributeString("weight", "76");
         subject.WriteStartElement("Extra");
         subject.WriteEndElement("Extra");
         subject.WriteEndElement("Details");
@@ -181,7 +181,7 @@ namespace XmlTools.Tests
       var sb = new StringBuilder();
       using (var subject = new LightXmlWriter(new StringWriter(sb)))
       {
-        subject.WriteElement("Person", 123);
+        subject.WriteElementString("Person", 123);
       }
       Assert.Equal("<Person>123</Person>", sb.ToString());
     }
@@ -192,20 +192,9 @@ namespace XmlTools.Tests
       var sb = new StringBuilder();
       using (var subject = new LightXmlWriter(new StringWriter(sb)))
       {
-        subject.WriteElement("Person", 123.45);
+        subject.WriteElementString("Person", 123.45);
       }
       Assert.Equal($"<Person>{123.45.ToString()}</Person>", sb.ToString());
-    }
-
-    [Fact]
-    public void WriteElement_Null()
-    {
-      var sb = new StringBuilder();
-      using (var subject = new LightXmlWriter(new StringWriter(sb)))
-      {
-        subject.WriteElement("Person", null);
-      }
-      Assert.Equal($"<Person/>", sb.ToString());
     }
 
     [Fact]
@@ -293,7 +282,20 @@ namespace XmlTools.Tests
       var expected = File.ReadAllText(Path.Combine("..", "..", "..", "Examples", "BuchbinderBookWriter.xml"));
 
       Assert.Equal(XDocument.Parse(expected).ToString(), XDocument.Parse(actual).ToString());
-      //Assert.True(XNode.DeepEquals(XDocument.Parse(expected), XDocument.Parse(actual)));
+    }
+
+    [Fact]
+    public void Writes_Supplier_Enterprise_Request()
+    {
+      var sb = new StringBuilder();
+      using (var subject = new LightXmlWriter(new StringWriter(sb)))
+      {
+        EnterpriseBookWriter.Write(subject);
+      }
+      var actual = sb.ToString();
+      var expected = File.ReadAllText(Path.Combine("..", "..", "..", "Examples", "EnterpriseBookWriter.xml"));
+
+      Assert.Equal(XDocument.Parse(expected).ToString(), XDocument.Parse(actual).ToString());
     }
   }
 }

@@ -1,0 +1,58 @@
+﻿<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.opentravel.org/OTA/2003/05">
+  <soapenv:Header />
+  <soapenv:Body>
+    <OTA_VehResRQ PrimaryLangID="EN" Target="Test" Version="3.0" xmlns="http://www.opentravel.org/OTA/2003/05" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <POS>
+        <Source ISOCountry="FR">
+          <RequestorID Type="4" ID="XMLRTA">
+            <CompanyName Code="EX" CompanyShortName="EHIXMLTEST" />
+          </RequestorID>
+        </Source>
+        <Source>
+          <RequestorID Type="4" ID="00000000" ID_Context="IATA" />
+        </Source>
+      </POS>
+      <VehResRQCore Status="Available">
+        <VehRentalCore PickUpDateTime="2017-05-30T09:00:00" ReturnDateTime="2017-05-31T09:00:00">
+          <PickUpLocation LocationCode="TIAC61" />
+          <ReturnLocation LocationCode="TIAC61" />
+        </VehRentalCore>
+        <Customer>
+          <Primary>
+            <PersonName>
+              <NamePrefix>Mr</NamePrefix>
+              <GivenName>John</GivenName>
+              <Surname>Doe</Surname>
+            </PersonName>
+            <Telephone PhoneUseType="3" PhoneTechType="1" CountryAccessCode="" AreaCityCode="" PhoneNumber="666-777-888" />
+            <Email>john.doe@example.com</Email>
+          </Primary>
+        </Customer>
+        <VendorPref Code="ET" />
+        <VehPref Code="EBMR" />
+        <DriverType Age="25" />
+        <RateQualifier RateQualifier="ER1AL" />
+        <SpecialEquipPrefs>
+          <SpecialEquipPref EquipType="7" Quantity="1" />
+          <SpecialEquipPref EquipType="8" Quantity="1" />
+        </SpecialEquipPrefs>
+        <TPA_Extensions>
+          <TPA_Extension_Flags EnhancedTotalPrice="true" />
+        </TPA_Extensions>
+      </VehResRQCore>
+      <VehResRQInfo>
+        <ArrivalDetails TransportationCode="14" Number="1234">
+          <OperatingCompany Code="LH" />
+        </ArrivalDetails>
+        <RentalPaymentPref>
+          <Voucher SeriesCode="cust-abc123" />
+        </RentalPaymentPref>
+        <Reference ID="ER1AL" DateTime="2013-05-01T19:36:00" Type="16" />
+        <TPA_Extensions>
+          <TPA_Extensions_Ref AltResNumber="q8ot" />
+          <TPA_Extensions_Ref CoRef1="cust-abc123" />
+        </TPA_Extensions>
+      </VehResRQInfo>
+    </OTA_VehResRQ>
+  </soapenv:Body>
+</soapenv:Envelope>

@@ -7,7 +7,7 @@ namespace XmlTools
   /// Light implementation of XmlWriter equivalent designed to be as close as 
   /// possible of XmlWriter usage & behaviour with most common settings (no pretty-print, no xml declaration, etc.)
   /// </summary>
-  public class LightXmlWriter : IDisposable
+  public sealed class LightXmlWriter : IDisposable
   {
     private readonly TextWriter writer;
     private bool writingStartElement = false;
@@ -125,11 +125,6 @@ namespace XmlTools
       this.writingStartElement = false;
     }
 
-    public void WriteElement(string name, string value, bool escapeValue = true)
-    {
-      WriteElementString(name, value, escapeValue);
-    }
-
     public void WriteElementString(string name, string value, bool escapeValue = true)
     {
       WriteStartElement(name);
@@ -150,6 +145,28 @@ namespace XmlTools
       this.writingStartElement = false;
     }
 
+#if NETCOREAPP2_1 || NETCOREAPP2_2
+    public void WriteElementString(string name, ReadOnlySpan<char> value, bool escapeValue = true)
+    {
+      WriteStartElement(name);
+      if (value == null)
+      {
+        WriteEndElement(name);
+      }
+      else
+      {
+        this.writer.Write('>');
+        WriteXmlString(value, escapeValue);
+        this.writer.Write('<');
+        this.writer.Write('/');
+        this.writer.Write(name);
+        this.writer.Write('>');
+        this.valueWritten = true;
+      }
+      this.writingStartElement = false;
+    }
+#endif
+
     public void WriteElementString(string prefix, string name, string ns, string value, bool escapeValue = true)
     {
       WriteStartElement(prefix, name, ns);
@@ -165,7 +182,7 @@ namespace XmlTools
       this.writingStartElement = false;
     }
 
-    public void WriteElement(string name, int value)
+    public void WriteElementString(string name, int value)
     {
       WriteStartElement(name);
       this.writer.Write('>');
@@ -198,7 +215,7 @@ namespace XmlTools
       this.writingStartElement = false;
     }
 
-    public void WriteElement(string name, double value)
+    public void WriteElementString(string name, double value)
     {
       WriteStartElement(name);
       this.writer.Write('>');
@@ -211,7 +228,7 @@ namespace XmlTools
       this.writingStartElement = false;
     }
 
-    public void WriteElement(string name, char value)
+    public void WriteElementString(string name, char value)
     {
       WriteStartElement(name);
       this.writer.Write('>');
@@ -224,7 +241,7 @@ namespace XmlTools
       this.writingStartElement = false;
     }
 
-    public void WriteElement(string name, bool value)
+    public void WriteElementString(string name, bool value)
     {
       WriteStartElement(name);
       this.writer.Write('>');
@@ -283,17 +300,21 @@ namespace XmlTools
 
     public void WriteAttributeString(string name, string value, bool escapeValue = true)
     {
-      WriteAttribute(name, value, escapeValue);
-    }
-
-    public void WriteAttribute(string name, string value, bool escapeValue = true)
-    {
       WriteStartAttributeImpl(name);
       WriteXmlString(value, escapeValue);
       this.writer.Write('"');
     }
 
-    public void WriteAttribute(string name, int value)
+#if NETCOREAPP2_1 || NETCOREAPP2_2
+    public void WriteAttributeString(string name, ReadOnlySpan<char> value, bool escapeValue = true)
+    {
+      WriteStartAttributeImpl(name);
+      WriteXmlString(value, escapeValue);
+      this.writer.Write('"');
+    }
+#endif
+
+    public void WriteAttributeString(string name, int value)
     {
       WriteStartAttributeImpl(name);
 
@@ -321,31 +342,38 @@ namespace XmlTools
       this.writer.Write('"');
     }
 
-    public void WriteAttribute(string name, char value)
+    public void WriteAttributeString(string name, char value)
     {
       WriteStartAttributeImpl(name);
       this.writer.Write(value);
       this.writer.Write('"');
     }
 
-    public void WriteAttribute(string name, double value)
+    public void WriteAttributeString(string name, double value)
     {
       WriteStartAttributeImpl(name);
       this.writer.Write(value);
       this.writer.Write('"');
     }
 
-    public void WriteAttribute(string name, decimal value)
+    public void WriteAttributeString(string name, decimal value)
     {
       WriteStartAttributeImpl(name);
       this.writer.Write(value);
       this.writer.Write('"');
     }
 
-    public void WriteAttribute(string name, bool value)
+    public void WriteAttributeString(string name, bool value)
     {
       WriteStartAttributeImpl(name);
       this.writer.Write(value);
+      this.writer.Write('"');
+    }
+
+    public void WriteAttributeString<TArg>(string name, TArg arg, Action<TextWriter, TArg> writeValueAction)
+    {
+      WriteStartAttributeImpl(name);
+      writeValueAction(this.writer, arg);
       this.writer.Write('"');
     }
 
@@ -372,6 +400,18 @@ namespace XmlTools
         writingStartElement = false;
       }
       WriteXmlString(value, escape);
+      this.valueWritten = true;
+    }
+
+    public void WriteValue(char[] value, int index, int count)
+    {
+      this.writer.Write(value, index, count);
+      this.valueWritten = true;
+    }
+
+    public void WriteValue<TArg>(TArg arg, Action<TextWriter, TArg> writeAction)
+    {
+      writeAction(this.writer, arg);
       this.valueWritten = true;
     }
 
@@ -438,6 +478,20 @@ namespace XmlTools
       this.writer.Write('"');
     }
 
+#if NETCOREAPP2_1 || NETCOREAPP2_2
+    private void WriteXmlString(ReadOnlySpan<char> value, bool escape = true)
+    {
+      if (escape)
+      {
+        WriteEscaped(value);
+      }
+      else
+      {
+        this.writer.Write(value);
+      }
+    }
+#endif
+
     private void WriteXmlString(string value, bool escape = true)
     {
       if (escape)
@@ -463,6 +517,47 @@ namespace XmlTools
       "'", "&apos;",
       "&", "&amp;"
     };
+
+#if NETCOREAPP2_1 || NETCOREAPP2_2
+    private void WriteEscaped(ReadOnlySpan<char> str)
+    {
+      if (str.IsEmpty)
+        return;
+
+      int strLen = str.Length;
+      int index; // Pointer into the string that indicates the location of the current '&' character
+      int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
+
+      bool foundAnyEscapeChar = false;
+
+      while (true)
+      {
+        index = str.IndexOfAny(s_escapeChars.AsSpan(newIndex));
+
+        if (index == -1)
+        {
+          if (!foundAnyEscapeChar)
+          {
+            this.writer.Write(str);
+            return;
+          }
+          else
+          {
+            this.writer.Write(str.Slice(newIndex, strLen - newIndex));
+            return;
+          }
+        }
+        else
+        {
+          foundAnyEscapeChar = true;
+          this.writer.Write(str.Slice(newIndex, index - newIndex));
+          WriteEscapeSequence(str[index]);
+
+          newIndex = (index + 1);
+        }
+      }
+    }
+#endif
 
     private void WriteEscaped(string str)
     {

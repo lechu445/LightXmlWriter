@@ -26,7 +26,7 @@ namespace XmlTools.Test.Examples
 
     private static void WriteBody(LightXmlWriter writer)
     {
-      writer.WriteElement("ReserveId", true);
+      writer.WriteElementString("ReserveId", true);
       writer.WriteStartElement("ClientName");
       writer.WriteValue("MR");
       writer.WriteValue(' ');
@@ -34,7 +34,7 @@ namespace XmlTools.Test.Examples
       writer.WriteValue(' ');
       writer.WriteValue("Doe");
       writer.WriteEndElement("ClientName");
-      writer.WriteElement("PickUpOfficeId", 88);
+      writer.WriteElementString("PickUpOfficeId", 88);
       writer.WriteElementString("PickUpDate", "2017-10-10", escapeValue: false);
       writer.WriteElementString("PickUpTime", "09:00", escapeValue: false);
       writer.WriteElementString("DropOffOfficeId", "89", escapeValue: false);
