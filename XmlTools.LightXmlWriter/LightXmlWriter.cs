@@ -507,16 +507,8 @@ namespace XmlTools
     #region WriteEscaped(value)
     // This is port of SecurityElement.Escape(value) that writes directly into this.writer instead of string creation
 
-    private static readonly char[] s_escapeChars = new char[] { '<', '>', '\"', '\'', '&' };
-    private static readonly string[] s_escapeStringPairs = new string[]
-    {
-      // these must be all once character escape sequences or a new escaping algorithm is needed
-      "<", "&lt;",
-      ">", "&gt;",
-      "\"", "&quot;",
-      "'", "&apos;",
-      "&", "&amp;"
-    };
+    private static readonly char[] s_escapeChars = new[] { '<', '>', '\"', '\'', '&' };
+    private static readonly string[] s_escapeStrings = new[] { "&lt;", "&gt;", "&quot;", "&apos;", "&amp;" };
 
 #if NETCOREAPP2_1 || NETCOREAPP2_2
     private void WriteEscaped(ReadOnlySpan<char> str)
@@ -608,15 +600,13 @@ namespace XmlTools
 
     private void WriteEscapeSequence(char c)
     {
-      int iMax = s_escapeStringPairs.Length;
+      int iMax = s_escapeStrings.Length;
 
-      for (int i = 0; i < iMax; i += 2)
+      for (int i = 0; i < iMax; i ++)
       {
-        string strEscSeq = s_escapeStringPairs[i];
-
-        if (strEscSeq[0] == c)
+        if (s_escapeChars[i] == c)
         {
-          this.writer.Write(s_escapeStringPairs[i + 1]);
+          this.writer.Write(s_escapeStrings[i]);
           return;
         }
       }

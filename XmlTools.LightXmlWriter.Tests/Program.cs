@@ -13,7 +13,7 @@ namespace XmlTools.Test
         .Create(DefaultConfig.Instance)
         .With(MemoryDiagnoser.Default);
 
-      var summary = BenchmarkRunner.Run<LightXmlWriterBenchmarks>(config);
+      var summary = BenchmarkRunner.Run<SimpleBenchmarks>(config);
     }
   }
 }

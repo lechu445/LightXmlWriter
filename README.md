@@ -6,18 +6,18 @@ This is a light implementation of XmlWriter equivalent designed to be as close a
 ### Similarities
 * Method names are kept the same, and they should work the same way
 
-For example
+For example for both writers:
 ```cs
 writer.WriteStartElement("soapenv", "Envelope", "http://schemas.xmlsoap.org/soap/envelope/");
 ```
-means:
+produces:
 ```xml
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
 ```
 
 * both are not thread-safe
 
-Both readers keep state, so they must not be processed in parallel. LightXmlWriter does not do any validation, so it could produce an unexpeced output.
+Both writers keep state, so they must not be processed in parallel. LightXmlWriter does not do any validation, so it could produce an unexpeced output.
 
 * both implement these methods:
     - WriteStartElement
@@ -33,7 +33,8 @@ Both readers keep state, so they must not be processed in parallel. LightXmlWrit
 
 ### Differences
 
-* LightXmlWriter contains overloads of methods 
+* LightXmlWriter contains more overloads of methods 
+
 The overload accepts int, double, bool, ReadOnlySpan<char> (only in .NET Core), char[] etc.
 You can even use overload that uses Action on TextWriter, so you can have all control!
 
@@ -58,8 +59,24 @@ It does not do any validation at run-time, no pretty-print of output, no XML dec
 
 * LightXmlWriter has better performance than XmlWriter
 
-It's hard to measure difference, because LightXmlWriter can be used in more efficient way (more overloads of methods).
-It seems, in similar scenario LightXmlWriter is at least 33% faster and 5x less allocations than XmlWriter.
+LightXmlWriter is about 5x faster and generates less allocations than XmlWriter because of methods overloads that don't need conversion to string before.
+
+* LightXmlWriter produces more compreesed self-closed xml tags
+
+The compressed version does not contain space before closing singn. It is still valid XML.
+
+XmlWriter:
+```cs
+writer.WriteStartElement("Person");
+writer.WriteEndElement();
+//produces <Person />
+```
+LightXmlWriter:
+```cs
+writer.WriteStartElement("Person");
+writer.WriteEndElement("Person");
+//produces <Person/>
+```
 
 ## Contributing
 
