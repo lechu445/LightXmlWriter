@@ -93,7 +93,7 @@ writer.WriteValue("ABCD", escape: false);
 writer.WriteEndElement();
 //produces <Code>ABCD</Code>
 
-writer.WriteElementString("Code", "ABCD", escape: false);
+writer.WriteElementString("Code", "ABCD", escapeValue: false);
 //produces <Code>ABCD</Code>
 ```
 

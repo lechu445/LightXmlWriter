@@ -46,7 +46,7 @@ namespace XmlTools
       if (ns != null)
       {
         this.writer.Write(" xmlns=\"");
-        WriteXmlString(ns, escape: false);
+        this.writer.Write(ns);
         this.writer.Write('"');
       }
       this.writingStartElement = true;
@@ -71,7 +71,7 @@ namespace XmlTools
         this.writer.Write(prefix);
         this.writer.Write('=');
         this.writer.Write('"');
-        WriteXmlString(ns, escape: false);
+        this.writer.Write(ns);
         this.writer.Write('"');
       }
 
@@ -271,7 +271,7 @@ namespace XmlTools
       this.writingAttribute = true;
     }
 
-    public void WriteEndAttribute(string name)
+    public void WriteEndAttribute(string name = null)
     {
       WriteEndAttribute();
     }
