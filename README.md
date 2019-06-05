@@ -29,13 +29,13 @@ Both writers keep state, so they must not be processed in parallel. LightXmlWrit
     - WriteRaw
     - WriteValue
 
-* both implement IDisposable intefrace
+* both implement IDisposable interface
 
 ### Differences
 
 * LightXmlWriter contains more overloads of methods 
 
-The overload accepts int, double, bool, ReadOnlySpan<char> (only in .NET Core), char[] etc.
+The overload accepts int, double, bool, ReadOnlySpan&lt;char&gt; (only in .NET Core), char[] etc.
 You can even use overload that uses Action on TextWriter, so you can have all control!
 
 * WriteEndElement must have name of the element
@@ -78,6 +78,25 @@ writer.WriteEndElement("Person");
 //produces <Person/>
 ```
 
+* LightXmlWriter does not validate & escape tag and attribute names
+
+XmlReader throws an exception in case of unescaped name
+
+* LightXmlWriter allows write values without escaping
+
+This is similar to Newtonsoft JsonWriter where you can set flag `escape: false`. It brings better performance than with enabled escape. Use it where you are sure that value does not need escaping.
+
+Example:
+```cs
+writer.WriteStartElement("Code");
+writer.WriteValue("ABCD", escape: false);
+writer.WriteEndElement();
+//produces <Code>ABCD</Code>
+
+writer.WriteElementString("Code", "ABCD", escape: false);
+//produces <Code>ABCD</Code>
+```
+
 ## Contributing
 
 You are welcome to help with this package. There are also a lot to do: write more benchmark tests, more tests, more overloads, finding bugs, making optimisations of existing code.
@@ -85,3 +104,9 @@ You are welcome to help with this package. There are also a lot to do: write mor
 ## Acknowledgments
 
 Please use it carefully. LightXmlWriter can produce an invalid XML, so write tests for each output.
+
+
+## Requirements
+
+Framework compatible with .NET Standard 1.3 (.NET Core 1.0, .NET Framework 4.6, Mono 4.6) or higher.  
+Currently ReadOnlySpan&lt;char&gt; overloads are only available in .NET Core 2.1 and 2.2 builds.
