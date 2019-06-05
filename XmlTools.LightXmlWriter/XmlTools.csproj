@@ -2,8 +2,15 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp2.2;netstandard1.3</TargetFrameworks>
+    <PackageId>LightXmlWriter</PackageId>
+    <Authors>lechu445</Authors>
+    <Product>LightXmlWriter</Product>
+    <Description>This is a light implementation of XmlWriter equivalent designed to be as close as possible of XmlWriter usage &amp; behaviour with most common settings (no pretty-print, no xml declaration, etc.)</Description>
+    <PackageProjectUrl>https://github.com/lechu445/LightXmlWriter</PackageProjectUrl>
     <DebugType>portable</DebugType>
     <LangVersion>7.2</LangVersion>
+    <PackageTags>xml, XmlWriter, light</PackageTags>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
 </Project>
