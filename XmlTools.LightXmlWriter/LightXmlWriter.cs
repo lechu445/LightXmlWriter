@@ -134,8 +134,7 @@ namespace XmlTools
       }
       else
       {
-        this.writer.Write('>');
-        WriteXmlString(value, escapeValue);
+        WriteValue(value, escapeValue);
         this.writer.Write('<');
         this.writer.Write('/');
         this.writer.Write(name);
@@ -155,8 +154,7 @@ namespace XmlTools
       }
       else
       {
-        this.writer.Write('>');
-        WriteXmlString(value, escapeValue);
+        WriteValue(value, escapeValue);
         this.writer.Write('<');
         this.writer.Write('/');
         this.writer.Write(name);
@@ -170,8 +168,7 @@ namespace XmlTools
     public void WriteElementString(string prefix, string name, string ns, string value, bool escapeValue = true)
     {
       WriteStartElement(prefix, name, ns);
-      this.writer.Write('>');
-      WriteXmlString(value, escapeValue);
+      WriteValue(value, escapeValue);
       this.writer.Write('<');
       this.writer.Write('/');
       this.writer.Write(prefix);
@@ -218,7 +215,6 @@ namespace XmlTools
     public void WriteElementString(string name, double value)
     {
       WriteStartElement(name);
-      this.writer.Write('>');
       WriteValue(value);
       this.writer.Write('<');
       this.writer.Write('/');
@@ -228,13 +224,13 @@ namespace XmlTools
       this.writingStartElement = false;
     }
 
-    public void WriteElementString(string name, char value)
+    public void WriteElementString(string name, char value, bool escapeValue = true)
     {
       WriteStartElement(name);
-      this.writer.Write('>');
       WriteValue(value);
       this.writer.Write('<');
       this.writer.Write('/');
+      WriteXmlChar(value, escapeValue);
       this.writer.Write(name);
       this.writer.Write('>');
       this.valueWritten = true;
@@ -244,7 +240,6 @@ namespace XmlTools
     public void WriteElementString(string name, bool value)
     {
       WriteStartElement(name);
-      this.writer.Write('>');
       WriteValue(value);
       this.writer.Write('<');
       this.writer.Write('/');
@@ -271,7 +266,7 @@ namespace XmlTools
       this.writingAttribute = true;
     }
 
-    public void WriteEndAttribute(string name = null)
+    public void WriteEndAttribute(string name)
     {
       WriteEndAttribute();
     }
@@ -342,10 +337,10 @@ namespace XmlTools
       this.writer.Write('"');
     }
 
-    public void WriteAttributeString(string name, char value)
+    public void WriteAttributeString(string name, char value, bool escapeValue = true)
     {
       WriteStartAttributeImpl(name);
-      this.writer.Write(value);
+      WriteXmlChar(value, escapeValue);
       this.writer.Write('"');
     }
 
@@ -405,61 +400,162 @@ namespace XmlTools
 
     public void WriteValue(char[] value, int index, int count)
     {
+      if (this.writingAttribute)
+      {
+        this.writer.Write(value, index, count);
+        return;
+      }
+      if (this.writingStartElement)
+      {
+        this.writer.Write('>');
+        writingStartElement = false;
+      }
       this.writer.Write(value, index, count);
       this.valueWritten = true;
     }
 
     public void WriteValue<TArg>(TArg arg, Action<TextWriter, TArg> writeAction)
     {
+      if (this.writingAttribute)
+      {
+        writeAction(this.writer, arg);
+        return;
+      }
+      if (this.writingStartElement)
+      {
+        this.writer.Write('>');
+        writingStartElement = false;
+      }
       writeAction(this.writer, arg);
       this.valueWritten = true;
     }
 
     public void WriteValue(int value)
     {
+      if (this.writingAttribute)
+      {
+        this.writer.Write(value);
+        return;
+      }
+      if (this.writingStartElement)
+      {
+        this.writer.Write('>');
+        writingStartElement = false;
+      }
       this.writer.Write(value);
       this.valueWritten = true;
     }
 
     public void WriteValue(double value)
     {
+      if (this.writingAttribute)
+      {
+        this.writer.Write(value);
+        return;
+      }
+      if (this.writingStartElement)
+      {
+        this.writer.Write('>');
+        writingStartElement = false;
+      }
       this.writer.Write(value);
       this.valueWritten = true;
     }
 
     public void WriteValue(decimal value)
     {
+      if (this.writingAttribute)
+      {
+        this.writer.Write(value);
+        return;
+      }
+      if (this.writingStartElement)
+      {
+        this.writer.Write('>');
+        writingStartElement = false;
+      }
       this.writer.Write(value);
       this.valueWritten = true;
     }
 
-    public void WriteValue(char value)
+    public void WriteValue(char value, bool escape = true)
     {
-      this.writer.Write(value);
+      if (this.writingAttribute)
+      {
+        WriteXmlChar(value, escape);
+        return;
+      }
+      if (this.writingStartElement)
+      {
+        this.writer.Write('>');
+        writingStartElement = false;
+      }
+      WriteXmlChar(value, escape);
       this.valueWritten = true;
     }
 
     public void WriteValue(long value)
     {
+      if (this.writingAttribute)
+      {
+        this.writer.Write(value);
+        return;
+      }
+      if (this.writingStartElement)
+      {
+        this.writer.Write('>');
+        writingStartElement = false;
+      }
       this.writer.Write(value);
       this.valueWritten = true;
     }
 
     public void WriteValue(bool value)
     {
+      if (this.writingAttribute)
+      {
+        this.writer.Write(value);
+        return;
+      }
+      if (this.writingStartElement)
+      {
+        this.writer.Write('>');
+        writingStartElement = false;
+      }
       this.writer.Write(value);
       this.valueWritten = true;
     }
 
     public void WriteValue(DateTime value)
     {
+      if (this.writingAttribute)
+      {
+        this.writer.Write(value);
+        return;
+      }
+      if (this.writingStartElement)
+      {
+        this.writer.Write('>');
+        writingStartElement = false;
+      }
       this.writer.Write(value);
       this.valueWritten = true;
     }
 
 #if NETCOREAPP2_1 || NETCOREAPP2_2
-    public void WriteSpanValue(ReadOnlySpan<char> value)
+    public void WriteValue(ReadOnlySpan<char> value, bool escape = true)
     {
+      if (this.writingAttribute)
+      {
+        WriteXmlString(value, escape);
+        return;
+      }
+      if (this.writingStartElement)
+      {
+        this.writer.Write('>');
+        writingStartElement = false;
+      }
+      WriteXmlString(value, escape);
       this.writer.Write(value);
       this.valueWritten = true;
     }
@@ -492,7 +588,7 @@ namespace XmlTools
     }
 #endif
 
-    private void WriteXmlString(string value, bool escape = true)
+    private void WriteXmlString(string value, bool escape)
     {
       if (escape)
       {
@@ -504,11 +600,22 @@ namespace XmlTools
       }
     }
 
+    private void WriteXmlChar(char value, bool escape)
+    {
+      if (escape)
+      {
+        WriteEscapeSequence(value);
+      }
+      else
+      {
+        this.writer.Write(value);
+      }
+    }
+
     #region WriteEscaped(value)
     // This is port of SecurityElement.Escape(value) that writes directly into this.writer instead of string creation
 
     private static readonly char[] s_escapeChars = new[] { '<', '>', '\"', '\'', '&' };
-    private static readonly string[] s_escapeStrings = new[] { "&lt;", "&gt;", "&quot;", "&apos;", "&amp;" };
 
 #if NETCOREAPP2_1 || NETCOREAPP2_2
     private void WriteEscaped(ReadOnlySpan<char> str)
@@ -600,17 +707,14 @@ namespace XmlTools
 
     private void WriteEscapeSequence(char c)
     {
-      int iMax = s_escapeStrings.Length;
-
-      for (int i = 0; i < iMax; i ++)
+      switch (c)
       {
-        if (s_escapeChars[i] == c)
-        {
-          this.writer.Write(s_escapeStrings[i]);
-          return;
-        }
+        case '<': this.writer.Write("&lt;"); break;
+        case '>': this.writer.Write("&gt;"); break;
+        case '\"': this.writer.Write("&quot;"); break;
+        case '&': this.writer.Write("&amp;"); break;
+        default: this.writer.Write(c); break;
       }
-      this.writer.Write(c);
     }
     #endregion
   }

@@ -22,7 +22,7 @@ namespace XmlTools.Tests
     }
 
     [Fact]
-    public void Escaped_Value()
+    public void WriteValue_String_Escape()
     {
       var sb = new StringBuilder();
       using (var subject = new LightXmlWriter(new StringWriter(sb)))
@@ -32,6 +32,19 @@ namespace XmlTools.Tests
         subject.WriteEndElement("Person");
       }
       Assert.Equal("<Person>This is &amp;some &lt;person</Person>", sb.ToString());
+    }
+
+    [Fact]
+    public void WriteValue_Int()
+    {
+      var sb = new StringBuilder();
+      using (var subject = new LightXmlWriter(new StringWriter(sb)))
+      {
+        subject.WriteStartElement("Person");
+        subject.WriteValue(12);
+        subject.WriteEndElement("Person");
+      }
+      Assert.Equal("<Person>12</Person>", sb.ToString());
     }
 
     [Fact]
