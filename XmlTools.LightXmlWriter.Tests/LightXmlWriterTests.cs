@@ -310,5 +310,19 @@ namespace XmlTools.Tests
 
       Assert.Equal(XDocument.Parse(expected).ToString(), XDocument.Parse(actual).ToString());
     }
+
+    [Fact]
+    public void XmlWriter_Writes_Supplier_Enterprise_Request()
+    {
+      var sb = new StringBuilder();
+      using (var subject = System.Xml.XmlWriter.Create(new StringWriter(sb)))
+      {
+        EnterpriseBookXmlWriter.Write(subject);
+      }
+      var actual = sb.ToString();
+      var expected = File.ReadAllText(Path.Combine("..", "..", "..", "Examples", "EnterpriseBookWriter.xml"));
+
+      Assert.Equal(XDocument.Parse(expected).ToString(), XDocument.Parse(actual).ToString());
+    }
   }
 }

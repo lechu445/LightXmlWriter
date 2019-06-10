@@ -61,14 +61,21 @@ namespace XmlTools
         this.writer.Write('>');
       }
       this.writer.Write('<');
-      this.writer.Write(prefix);
-      this.writer.Write(':');
+      if (prefix != null)
+      {
+        this.writer.Write(prefix);
+        this.writer.Write(':');
+      }
       this.writer.Write(name);
 
-      if (ns != null)
+      if (ns != null && prefix != null)
       {
-        this.writer.Write(" xmlns:");
-        this.writer.Write(prefix);
+        this.writer.Write(" xmlns");
+        if (prefix != null)
+        {
+          this.writer.Write(":");
+          this.writer.Write(prefix);
+        }
         this.writer.Write('=');
         this.writer.Write('"');
         this.writer.Write(ns);
@@ -112,8 +119,11 @@ namespace XmlTools
         }
         this.writer.Write('<');
         this.writer.Write('/');
-        this.writer.Write(prefix);
-        this.writer.Write(':');
+        if (prefix != null)
+        {
+          this.writer.Write(prefix);
+          this.writer.Write(':');
+        }
         this.writer.Write(name);
       }
       else if (this.writingStartElement)
@@ -171,8 +181,11 @@ namespace XmlTools
       WriteValue(value, escapeValue);
       this.writer.Write('<');
       this.writer.Write('/');
-      this.writer.Write(prefix);
-      this.writer.Write(':');
+      if (prefix != null)
+      {
+        this.writer.Write(prefix);
+        this.writer.Write(':');
+      }
       this.writer.Write(name);
       this.writer.Write('>');
       this.valueWritten = true;
@@ -258,8 +271,11 @@ namespace XmlTools
     public void WriteStartAttribute(string prefix, string name)
     {
       this.writer.Write(' ');
-      this.writer.Write(prefix);
-      this.writer.Write(':');
+      if (prefix != null)
+      {
+        this.writer.Write(prefix);
+        this.writer.Write(':');
+      }
       this.writer.Write(name);
       this.writer.Write('=');
       this.writer.Write('"');
@@ -284,8 +300,12 @@ namespace XmlTools
       WriteEndAttribute();
       if (!string.IsNullOrEmpty(ns))
       {
-        this.writer.Write(" xmlns:");
-        this.writer.Write(prefix);
+        this.writer.Write(" xmlns");
+        if (prefix != null)
+        {
+          this.writer.Write(':');
+          this.writer.Write(prefix);
+        }
         this.writer.Write('=');
         this.writer.Write('"');
         this.writer.Write(ns);
