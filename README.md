@@ -1,5 +1,14 @@
 # LightXmlWriter
-This is a light implementation of XmlWriter equivalent designed to be as close as possible of XmlWriter usage &amp; behaviour with most common settings (no pretty-print, no xml declaration, etc.)
+The LightXmlWriter is a replacement of XmlWriter which can be useful in high-performance API implementation. Therefore there are several goals to reach:
+- high performance
+    - zero allocation
+    - faster work than XmlWriter
+    - no runtime validation
+    - keep it simple (no configuration)
+    - allow write non-string values without creation to intermediate string
+    - allow disable escaping values in similar way to Newtonsoft.Json
+    - produce as small as possible output XML
+- easy migration from XmlWriter
 
 ## LightXmlWriter vs XmlWriter
 
