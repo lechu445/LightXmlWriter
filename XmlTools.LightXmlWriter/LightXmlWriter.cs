@@ -10,7 +10,7 @@ namespace XmlTools
   public sealed class LightXmlWriter : IDisposable
   {
     private readonly TextWriter writer;
-    private bool writingStartElement = false;
+    private bool writingElement = false;
     private bool writingAttribute = false;
     private bool valueWritten = false;
 
@@ -24,20 +24,20 @@ namespace XmlTools
     // Writes out a start tag with the specified local name with no namespace.
     public void WriteStartElement(string name)
     {
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
       }
       this.writer.Write('<');
       this.writer.Write(name);
-      this.writingStartElement = true;
+      this.writingElement = true;
       this.valueWritten = false;
     }
 
     // Writes out the specified start tag and associates it with the given namespace.
     public void WriteStartElement(string name, string ns)
     {
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
       }
@@ -49,14 +49,14 @@ namespace XmlTools
         this.writer.Write(ns);
         this.writer.Write('"');
       }
-      this.writingStartElement = true;
+      this.writingElement = true;
       this.valueWritten = false;
     }
 
     // Writes out the specified start tag and associates it with the given namespace and prefix.
     public void WriteStartElement(string prefix, string name, string ns)
     {
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
       }
@@ -82,7 +82,7 @@ namespace XmlTools
         this.writer.Write('"');
       }
 
-      this.writingStartElement = true;
+      this.writingElement = true;
       this.valueWritten = false;
     }
 
@@ -91,7 +91,7 @@ namespace XmlTools
     {
       if (this.valueWritten)
       {
-        if (this.writingStartElement)
+        if (this.writingElement)
         {
           this.writer.Write('>');
         }
@@ -99,13 +99,13 @@ namespace XmlTools
         this.writer.Write('/');
         this.writer.Write(name);
       }
-      else if (this.writingStartElement)
+      else if (this.writingElement)
       {
         this.writer.Write('/');
       }
       this.writer.Write('>');
       this.valueWritten = true;
-      this.writingStartElement = false;
+      this.writingElement = false;
     }
 
     // Closes one element of specified tag name and prefix.
@@ -113,7 +113,7 @@ namespace XmlTools
     {
       if (this.valueWritten)
       {
-        if (this.writingStartElement)
+        if (this.writingElement)
         {
           this.writer.Write('>');
         }
@@ -126,13 +126,13 @@ namespace XmlTools
         }
         this.writer.Write(name);
       }
-      else if (this.writingStartElement)
+      else if (this.writingElement)
       {
         this.writer.Write('/');
       }
       this.writer.Write('>');
       this.valueWritten = true;
-      this.writingStartElement = false;
+      this.writingElement = false;
     }
 
     public void WriteElementString(string name, string value, bool escapeValue = true)
@@ -151,7 +151,7 @@ namespace XmlTools
         this.writer.Write('>');
         this.valueWritten = true;
       }
-      this.writingStartElement = false;
+      this.writingElement = false;
     }
 
 #if NETCOREAPP2_1 || NETCOREAPP2_2
@@ -171,7 +171,7 @@ namespace XmlTools
         this.writer.Write('>');
         this.valueWritten = true;
       }
-      this.writingStartElement = false;
+      this.writingElement = false;
     }
 #endif
 
@@ -189,7 +189,7 @@ namespace XmlTools
       this.writer.Write(name);
       this.writer.Write('>');
       this.valueWritten = true;
-      this.writingStartElement = false;
+      this.writingElement = false;
     }
 
     public void WriteElementString(string name, int value)
@@ -222,7 +222,7 @@ namespace XmlTools
       this.writer.Write(name);
       this.writer.Write('>');
       this.valueWritten = true;
-      this.writingStartElement = false;
+      this.writingElement = false;
     }
 
     public void WriteElementString(string name, double value)
@@ -234,7 +234,7 @@ namespace XmlTools
       this.writer.Write(name);
       this.writer.Write('>');
       this.valueWritten = true;
-      this.writingStartElement = false;
+      this.writingElement = false;
     }
 
     public void WriteElementString(string name, char value, bool escapeValue = true)
@@ -247,7 +247,7 @@ namespace XmlTools
       this.writer.Write(name);
       this.writer.Write('>');
       this.valueWritten = true;
-      this.writingStartElement = false;
+      this.writingElement = false;
     }
 
     public void WriteElementString(string name, bool value)
@@ -259,7 +259,7 @@ namespace XmlTools
       this.writer.Write(name);
       this.writer.Write('>');
       this.valueWritten = true;
-      this.writingStartElement = false;
+      this.writingElement = false;
     }
 
     public void WriteStartAttribute(string name)
@@ -409,10 +409,10 @@ namespace XmlTools
         WriteXmlString(value, escape);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       WriteXmlString(value, escape);
       this.valueWritten = true;
@@ -425,10 +425,10 @@ namespace XmlTools
         this.writer.Write(value, index, count);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       this.writer.Write(value, index, count);
       this.valueWritten = true;
@@ -441,10 +441,10 @@ namespace XmlTools
         writeAction(this.writer, arg);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       writeAction(this.writer, arg);
       this.valueWritten = true;
@@ -457,10 +457,10 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       this.writer.Write(value);
       this.valueWritten = true;
@@ -473,10 +473,10 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       this.writer.Write(value);
       this.valueWritten = true;
@@ -489,10 +489,10 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       this.writer.Write(value);
       this.valueWritten = true;
@@ -505,10 +505,10 @@ namespace XmlTools
         WriteXmlChar(value, escape);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       WriteXmlChar(value, escape);
       this.valueWritten = true;
@@ -521,10 +521,10 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       this.writer.Write(value);
       this.valueWritten = true;
@@ -537,10 +537,10 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       this.writer.Write(value);
       this.valueWritten = true;
@@ -553,10 +553,10 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       this.writer.Write(value);
       this.valueWritten = true;
@@ -570,10 +570,10 @@ namespace XmlTools
         WriteXmlString(value, escape);
         return;
       }
-      if (this.writingStartElement)
+      if (this.writingElement)
       {
         this.writer.Write('>');
-        writingStartElement = false;
+        writingElement = false;
       }
       WriteXmlString(value, escape);
       this.writer.Write(value);
