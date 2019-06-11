@@ -43,13 +43,13 @@ namespace XmlTools.Benchmarks
     [IterationSetup(Target = nameof(LightXmlWriter_Write_Xml))]
     public void LightXmlWriter_Before_Each_Test()
     {
-      this.writer = new LightXmlWriter(new StreamWriter(new MemoryStream()));
+      this.writer = new LightXmlWriter(new StreamWriter(new MemoryStream(9000)));
     }
 
     [IterationSetup(Target = nameof(XmlWriter_Write_Xml))]
     public void Before_Each_Test()
     {
-      this.xmlWriter = XmlWriter.Create(new StreamWriter(new MemoryStream()));
+      this.xmlWriter = XmlWriter.Create(new StreamWriter(new MemoryStream(9000)));
     }
 
     [Benchmark]

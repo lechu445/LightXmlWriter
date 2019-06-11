@@ -204,12 +204,12 @@ namespace XmlTools
       }
       int i = 0;
       Span<char> chars = stackalloc char[10];
-      while (value != 0)
+      do
       {
         chars[i] = (char)('0' + value % 10);
         value /= 10;
         i++;
-      }
+      } while (value != 0);
       for (int j = i - 1; j >= 0; j--)
       {
         this.writer.Write(chars[j]);
@@ -341,12 +341,12 @@ namespace XmlTools
       }
       int i = 0;
       Span<char> chars = stackalloc char[10];
-      while (value != 0)
+      do
       {
         chars[i] = (char)('0' + value % 10);
         value /= 10;
         i++;
-      }
+      } while (value != 0);
       for (int j = i - 1; j >= 0; j--)
       {
         this.writer.Write(chars[j]);
