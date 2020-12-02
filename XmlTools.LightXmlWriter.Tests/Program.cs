@@ -1,7 +1,6 @@
 ﻿using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Running;
-using XmlTools.Benchmarks;
 
 namespace XmlTools.Test
 {
@@ -13,7 +12,7 @@ namespace XmlTools.Test
         .Create(DefaultConfig.Instance)
         .With(MemoryDiagnoser.Default);
 
-      var summary = BenchmarkRunner.Run<EnterpriseLightXmlWriterBenchmarks>(config);
+      BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run();
     }
   }
 }

@@ -12,6 +12,16 @@ The LightXmlWriter is a replacement of XmlWriter which can be useful in high-per
 
 ## LightXmlWriter vs XmlWriter
 
+### Benchmarks
+
+EnterpriseLightXmlWriterBenchmarks.LightXmlWriter_Write_Xml
+```
+|                   Method |      Mean |     Error |    StdDev |    Median | Gen 0 | Gen 1 | Gen 2 | Allocated |
+|------------------------- |----------:|----------:|----------:|----------:|------:|------:|------:|----------:|
+| LightXmlWriter_Write_Xml |  8.585 us | 0.1733 us | 0.2429 us |  8.600 us |     - |     - |     - |         - |
+|      XmlWriter_Write_Xml | 17.923 us | 0.4765 us | 1.3671 us | 18.300 us |     - |     - |     - |    1288 B |
+```
+
 ### Similarities
 * Method names are kept the same, and they should work the same way
 

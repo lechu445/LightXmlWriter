@@ -5,6 +5,7 @@ using XmlTools.Test.Examples;
 
 namespace XmlTools.Benchmarks
 {
+  [MemoryDiagnoser]
   public class LightXmlWriterBenchmarks
   {
     private LightXmlWriter writer;
@@ -35,6 +36,7 @@ namespace XmlTools.Benchmarks
     }
   }
 
+  [MemoryDiagnoser]
   public class EnterpriseLightXmlWriterBenchmarks
   {
     private LightXmlWriter writer;

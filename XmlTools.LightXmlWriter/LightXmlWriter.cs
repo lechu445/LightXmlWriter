@@ -73,7 +73,7 @@ namespace XmlTools
         this.writer.Write(" xmlns");
         if (prefix != null)
         {
-          this.writer.Write(":");
+          this.writer.Write(':');
           this.writer.Write(prefix);
         }
         this.writer.Write('=');
@@ -154,7 +154,26 @@ namespace XmlTools
       this.writingElement = false;
     }
 
-#if NETCOREAPP2_1 || NETCOREAPP2_2
+    public void WriteElementString(string name, DateTime value, string format)
+    {
+      WriteStartElement(name);
+      if (value == null)
+      {
+        WriteEndElement(name);
+      }
+      else
+      {
+        WriteValue(value, format);
+        this.writer.Write('<');
+        this.writer.Write('/');
+        this.writer.Write(name);
+        this.writer.Write('>');
+        this.valueWritten = true;
+      }
+      this.writingElement = false;
+    }
+
+#if NETCOREAPP2_1 || NET5_0
     public void WriteElementString(string name, ReadOnlySpan<char> value, bool escapeValue = true)
     {
       WriteStartElement(name);
@@ -196,7 +215,7 @@ namespace XmlTools
     {
       WriteStartElement(name);
       this.writer.Write('>');
-#if NETCOREAPP2_1 || NETCOREAPP2_2
+#if NETCOREAPP2_1 || NET5_0
       if (value < 0)
       {
         this.writer.Write('-');
@@ -320,7 +339,7 @@ namespace XmlTools
       this.writer.Write('"');
     }
 
-#if NETCOREAPP2_1 || NETCOREAPP2_2
+#if NETCOREAPP2_1 || NET5_0
     public void WriteAttributeString(string name, ReadOnlySpan<char> value, bool escapeValue = true)
     {
       WriteStartAttributeImpl(name);
@@ -333,7 +352,7 @@ namespace XmlTools
     {
       WriteStartAttributeImpl(name);
 
-#if NETCOREAPP2_1 || NETCOREAPP2_2
+#if NETCOREAPP2_1 || NET5_0
       if (value < 0)
       {
         this.writer.Write('-');
@@ -546,11 +565,12 @@ namespace XmlTools
       this.valueWritten = true;
     }
 
-    public void WriteValue(DateTime value)
+#if NETCOREAPP2_1 || NET5_0
+    public void WriteValue(DateTime value, ReadOnlySpan<char> format)
     {
       if (this.writingAttribute)
       {
-        this.writer.Write(value);
+        Write(value, format);
         return;
       }
       if (this.writingElement)
@@ -558,12 +578,43 @@ namespace XmlTools
         this.writer.Write('>');
         writingElement = false;
       }
-      this.writer.Write(value);
+      Write(value, format);
+      this.valueWritten = true;
+
+      void Write(DateTime value, ReadOnlySpan<char> format)
+      {
+        Span<char> buffer = stackalloc char[30];
+        if (value.TryFormat(buffer, out int charsWritten, format))
+        {
+          this.writer.Write(buffer.Slice(charsWritten));
+        }
+        else
+        {
+          this.writer.Write(value.ToString(format.ToString()));
+        }
+      }
+    }
+#else
+    public void WriteValue(DateTime value, string format = null)
+    {
+      if (this.writingAttribute)
+      {
+        this.writer.Write(value.ToString(format));
+        return;
+      }
+      if (this.writingElement)
+      {
+        this.writer.Write('>');
+        writingElement = false;
+      }
+      this.writer.Write(value.ToString(format));
       this.valueWritten = true;
     }
+#endif
 
-#if NETCOREAPP2_1 || NETCOREAPP2_2
-    public void WriteValue(ReadOnlySpan<char> value, bool escape = true)
+
+#if NETCOREAPP2_1 || NET5_0
+        public void WriteValue(ReadOnlySpan<char> value, bool escape = true)
     {
       if (this.writingAttribute)
       {
@@ -594,7 +645,7 @@ namespace XmlTools
       this.writer.Write('"');
     }
 
-#if NETCOREAPP2_1 || NETCOREAPP2_2
+#if NETCOREAPP2_1 || NET5_0
     private void WriteXmlString(ReadOnlySpan<char> value, bool escape = true)
     {
       if (escape)
@@ -637,7 +688,7 @@ namespace XmlTools
 
     private static readonly char[] s_escapeChars = new[] { '<', '>', '\"', '\'', '&' };
 
-#if NETCOREAPP2_1 || NETCOREAPP2_2
+#if NETCOREAPP2_1 || NET5_0 || NET5_0
     private void WriteEscaped(ReadOnlySpan<char> str)
     {
       if (str.IsEmpty)
@@ -702,7 +753,7 @@ namespace XmlTools
           }
           else
           {
-#if NETCOREAPP2_1 || NETCOREAPP2_2
+#if NETCOREAPP2_1 || NET5_0
             this.writer.Write(str.AsSpan(newIndex, strLen - newIndex));
 #else
             this.writer.Write(str.Substring(newIndex, strLen - newIndex));
@@ -713,7 +764,7 @@ namespace XmlTools
         else
         {
           foundAnyEscapeChar = true;
-#if NETCOREAPP2_1 || NETCOREAPP2_2
+#if NETCOREAPP2_1 || NET5_0
           this.writer.Write(str.AsSpan(newIndex, index - newIndex));
 #else
           this.writer.Write(str.Substring(newIndex, index - newIndex));
