@@ -1,11 +1,11 @@
 # LightXmlWriter
-The LightXmlWriter is a replacement of XmlWriter which can be useful in high-performance API implementation. Therefore there are several goals to reach:
+This is a replacement of XmlWriter which can be useful in high-performance scenarios. Therefore there are several goals to reach:
 - high performance
     - zero allocation
-    - faster work than XmlWriter
+    - be faster than XmlWriter
     - no runtime validation
     - keep it simple (no configuration)
-    - allow write non-string values without creation to intermediate string
+    - allow writing concrete types (Span<T>, int, double, DateTime, etc.)
     - allow disable escaping values in similar way to Newtonsoft.Json
     - produce as small as possible output XML
 - easy migration from XmlWriter
@@ -78,9 +78,9 @@ It does not do any validation at run-time, no pretty-print of output, no XML dec
 
 * LightXmlWriter has better performance than XmlWriter
 
-LightXmlWriter is about 5x faster and generates less allocations than XmlWriter because of methods overloads that don't need conversion to string before.
+LightXmlWriter is about 2x faster and generates less allocations than XmlWriter because of methods overloads that don't need conversion to string before.
 
-* LightXmlWriter produces more compreesed self-closed xml tags
+* LightXmlWriter produces more compressed self-closed xml tags
 
 The compressed version does not contain space before closing singn. It is still valid XML.
 
@@ -136,4 +136,4 @@ Please use it carefully. LightXmlWriter can produce an invalid XML, so write tes
 ## Requirements
 
 Framework compatible with .NET Standard 1.3 (.NET Core 1.0, .NET Framework 4.6, Mono 4.6) or higher.  
-Currently ReadOnlySpan&lt;char&gt; overloads are only available in .NET Core 2.1 and 2.2 builds.
+Currently ReadOnlySpan&lt;char&gt; overloads are only available in .NET Core 2.1 and .NET 5.0 builds.
