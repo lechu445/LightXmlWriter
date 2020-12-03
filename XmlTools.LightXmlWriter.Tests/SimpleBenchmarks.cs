@@ -47,6 +47,7 @@ namespace XmlTools.Benchmarks
       new Action<LightXmlWriter>((w) => { w.WriteStartElement("Person"); w.WriteElementString("Age", "22"); w.WriteEndElement("Person"); }),
       new Action<LightXmlWriter>((w) => { w.WriteStartElement("Person"); w.WriteValue("this is some text <that> should be escaped"); w.WriteEndElement("Person"); }),
       new Action<LightXmlWriter>((w) => { w.WriteStartElement("soapenv", "Person", "http://ns.com"); w.WriteEndElement("soapenv:Person"); }),
+      new Action<LightXmlWriter>((w) => { w.WriteElementString("Person", 22); }),
     };
 
     private static readonly Action<XmlWriter>[] methods2 = new[]
@@ -57,6 +58,7 @@ namespace XmlTools.Benchmarks
       new Action<XmlWriter>((w) => { w.WriteStartElement("Person"); w.WriteElementString("Age", "22"); w.WriteEndElement(); }),
       new Action<XmlWriter>((w) => { w.WriteStartElement("Person"); w.WriteValue("this is some text <that> should be escaped"); w.WriteEndElement(); }),
       new Action<XmlWriter>((w) => { w.WriteStartElement("soapenv", "Person", "http://ns.com"); w.WriteEndElement(); }),
+      new Action<XmlWriter>((w) => { w.WriteElementString("Person", 22.ToString()); }),
     };
 
     [Fact]

@@ -157,19 +157,12 @@ namespace XmlTools
     public void WriteElementString(string name, DateTime value, string format)
     {
       WriteStartElement(name);
-      if (value == null)
-      {
-        WriteEndElement(name);
-      }
-      else
-      {
-        WriteValue(value, format);
-        this.writer.Write('<');
-        this.writer.Write('/');
-        this.writer.Write(name);
-        this.writer.Write('>');
-        this.valueWritten = true;
-      }
+      WriteValue(value, format);
+      this.writer.Write('<');
+      this.writer.Write('/');
+      this.writer.Write(name);
+      this.writer.Write('>');
+      this.valueWritten = true;
       this.writingElement = false;
     }
 
@@ -177,19 +170,12 @@ namespace XmlTools
     public void WriteElementString(string name, ReadOnlySpan<char> value, bool escapeValue = true)
     {
       WriteStartElement(name);
-      if (value == null)
-      {
-        WriteEndElement(name);
-      }
-      else
-      {
-        WriteValue(value, escapeValue);
-        this.writer.Write('<');
-        this.writer.Write('/');
-        this.writer.Write(name);
-        this.writer.Write('>');
-        this.valueWritten = true;
-      }
+      WriteValue(value, escapeValue);
+      this.writer.Write('<');
+      this.writer.Write('/');
+      this.writer.Write(name);
+      this.writer.Write('>');
+      this.valueWritten = true;
       this.writingElement = false;
     }
 #endif
@@ -225,7 +211,7 @@ namespace XmlTools
       Span<char> chars = stackalloc char[10];
       do
       {
-        chars[i] = (char)('0' + value % 10);
+        chars[i] = (char)('0' + (value % 10));
         value /= 10;
         i++;
       } while (value != 0);
@@ -362,7 +348,7 @@ namespace XmlTools
       Span<char> chars = stackalloc char[10];
       do
       {
-        chars[i] = (char)('0' + value % 10);
+        chars[i] = (char)('0' + (value % 10));
         value /= 10;
         i++;
       } while (value != 0);
@@ -583,10 +569,10 @@ namespace XmlTools
 
       void Write(DateTime value, ReadOnlySpan<char> format)
       {
-        Span<char> buffer = stackalloc char[30];
+        Span<char> buffer = stackalloc char[20];
         if (value.TryFormat(buffer, out int charsWritten, format))
         {
-          this.writer.Write(buffer.Slice(charsWritten));
+          this.writer.Write(buffer.Slice(0, charsWritten));
         }
         else
         {
@@ -612,9 +598,8 @@ namespace XmlTools
     }
 #endif
 
-
 #if NETCOREAPP2_1 || NET5_0
-        public void WriteValue(ReadOnlySpan<char> value, bool escape = true)
+    public void WriteValue(ReadOnlySpan<char> value, bool escape = true)
     {
       if (this.writingAttribute)
       {
@@ -683,7 +668,7 @@ namespace XmlTools
       }
     }
 
-    #region WriteEscaped(value)
+#region WriteEscaped(value)
     // This is port of SecurityElement.Escape(value) that writes directly into this.writer instead of string creation
 
     private static readonly char[] s_escapeChars = new[] { '<', '>', '\"', '\'', '&' };
@@ -694,7 +679,6 @@ namespace XmlTools
       if (str.IsEmpty)
         return;
 
-      int strLen = str.Length;
       int index; // Pointer into the string that indicates the location of the current '&' character
       int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
 
@@ -713,14 +697,14 @@ namespace XmlTools
           }
           else
           {
-            this.writer.Write(str.Slice(newIndex, strLen - newIndex));
+            this.writer.Write(str[newIndex..]);
             return;
           }
         }
         else
         {
           foundAnyEscapeChar = true;
-          this.writer.Write(str.Slice(newIndex, index - newIndex));
+          this.writer.Write(str[newIndex..index]);
           WriteEscapeSequence(str[index]);
 
           newIndex = (index + 1);
@@ -787,6 +771,6 @@ namespace XmlTools
         default: this.writer.Write(c); break;
       }
     }
-    #endregion
+#endregion
   }
 }

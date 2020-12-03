@@ -10,9 +10,9 @@ namespace XmlTools.Test
     {
       var config = ManualConfig
         .Create(DefaultConfig.Instance)
-        .With(MemoryDiagnoser.Default);
+        .AddDiagnoser(MemoryDiagnoser.Default);
 
-      BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run();
+      BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, config);
     }
   }
 }
