@@ -14,12 +14,17 @@ namespace XmlTools
     private bool writingAttribute = false;
     private bool valueWritten = false;
 
+    public TextWriter Writer => this.writer;
+
     public LightXmlWriter(TextWriter writer)
     {
-      this.writer = writer;
+      this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
     }
 
-    public TextWriter Writer => this.writer;
+    public void Dispose()
+    {
+      this.writer.Dispose();
+    }
 
     // Writes out a start tag with the specified local name with no namespace.
     public void WriteStartElement(string name)
@@ -35,7 +40,7 @@ namespace XmlTools
     }
 
     // Writes out the specified start tag and associates it with the given namespace.
-    public void WriteStartElement(string name, string ns)
+    public void WriteStartElement(string name, string? ns)
     {
       if (this.writingElement)
       {
@@ -54,7 +59,7 @@ namespace XmlTools
     }
 
     // Writes out the specified start tag and associates it with the given namespace and prefix.
-    public void WriteStartElement(string prefix, string name, string ns)
+    public void WriteStartElement(string? prefix, string name, string? ns)
     {
       if (this.writingElement)
       {
@@ -70,12 +75,8 @@ namespace XmlTools
 
       if (ns != null && prefix != null)
       {
-        this.writer.Write(" xmlns");
-        if (prefix != null)
-        {
-          this.writer.Write(':');
-          this.writer.Write(prefix);
-        }
+        this.writer.Write(" xmlns:");
+        this.writer.Write(prefix);
         this.writer.Write('=');
         this.writer.Write('"');
         this.writer.Write(ns);
@@ -109,7 +110,7 @@ namespace XmlTools
     }
 
     // Closes one element of specified tag name and prefix.
-    public void WriteEndElement(string prefix, string name)
+    public void WriteEndElement(string? prefix, string name)
     {
       if (this.valueWritten)
       {
@@ -135,7 +136,7 @@ namespace XmlTools
       this.writingElement = false;
     }
 
-    public void WriteElementString(string name, string value, bool escapeValue = true)
+    public void WriteElementString(string name, string? value, bool escapeValue = true)
     {
       WriteStartElement(name);
       if (value == null)
@@ -154,7 +155,7 @@ namespace XmlTools
       this.writingElement = false;
     }
 
-    public void WriteElementString(string name, DateTime value, string format)
+    public void WriteElementString(string name, DateTime value, string? format)
     {
       WriteStartElement(name);
       WriteValue(value, format);
@@ -180,7 +181,7 @@ namespace XmlTools
     }
 #endif
 
-    public void WriteElementString(string prefix, string name, string ns, string value, bool escapeValue = true)
+    public void WriteElementString(string? prefix, string name, string? ns, string? value, bool escapeValue = true)
     {
       WriteStartElement(prefix, name, ns);
       WriteValue(value, escapeValue);
@@ -258,9 +259,14 @@ namespace XmlTools
     public void WriteElementString(string name, bool value)
     {
       WriteStartElement(name);
-      WriteValue(value);
-      this.writer.Write('<');
-      this.writer.Write('/');
+      if (value)
+      {
+        this.writer.Write("True</");
+      }
+      else
+      {
+        this.writer.Write("False</");
+      }
       this.writer.Write(name);
       this.writer.Write('>');
       this.valueWritten = true;
@@ -273,7 +279,7 @@ namespace XmlTools
       this.writingAttribute = true;
     }
 
-    public void WriteStartAttribute(string prefix, string name)
+    public void WriteStartAttribute(string? prefix, string name)
     {
       this.writer.Write(' ');
       if (prefix != null)
@@ -298,7 +304,7 @@ namespace XmlTools
       this.writingAttribute = false;
     }
 
-    public void WriteAttributeString(string prefix, string name, string ns, string value, bool escapeValue = true)
+    public void WriteAttributeString(string? prefix, string name, string? ns, string? value, bool escapeValue = true)
     {
       WriteStartAttribute(prefix, name);
       WriteXmlString(value, escapeValue);
@@ -318,7 +324,7 @@ namespace XmlTools
       }
     }
 
-    public void WriteAttributeString(string name, string value, bool escapeValue = true)
+    public void WriteAttributeString(string name, string? value, bool escapeValue = true)
     {
       WriteStartAttributeImpl(name);
       WriteXmlString(value, escapeValue);
@@ -402,12 +408,12 @@ namespace XmlTools
       WriteValue(value, escape: false);
     }
 
-    public void WriteString(string value, bool escape = true)
+    public void WriteString(string? value, bool escape = true)
     {
       WriteValue(value, escape);
     }
 
-    public void WriteValue(string value, bool escape = true)
+    public void WriteValue(string? value, bool escape = true)
     {
       if (this.writingAttribute)
       {
@@ -423,7 +429,7 @@ namespace XmlTools
       this.valueWritten = true;
     }
 
-    public void WriteValue(char[] value, int index, int count)
+    public void WriteChars(char[] value, int index, int count)
     {
       if (this.writingAttribute)
       {
@@ -581,7 +587,7 @@ namespace XmlTools
       }
     }
 #else
-    public void WriteValue(DateTime value, string format = null)
+    public void WriteValue(DateTime value, string? format = null)
     {
       if (this.writingAttribute)
       {
@@ -617,11 +623,6 @@ namespace XmlTools
     }
 #endif
 
-    public void Dispose()
-    {
-      this.writer?.Dispose();
-    }
-
     private void WriteStartAttributeImpl(string name)
     {
       this.writer.Write(' ');
@@ -644,7 +645,7 @@ namespace XmlTools
     }
 #endif
 
-    private void WriteXmlString(string value, bool escape)
+    private void WriteXmlString(string? value, bool escape)
     {
       if (escape)
       {
@@ -713,7 +714,7 @@ namespace XmlTools
     }
 #endif
 
-    private void WriteEscaped(string str)
+    private void WriteEscaped(string? str)
     {
       if (str == null)
         return;
