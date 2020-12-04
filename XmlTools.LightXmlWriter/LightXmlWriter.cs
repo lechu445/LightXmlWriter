@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace XmlTools
 {
@@ -212,8 +213,8 @@ namespace XmlTools
       Span<char> chars = stackalloc char[10];
       do
       {
-        chars[i] = (char)('0' + (value % 10));
-        value /= 10;
+        value = Math.DivRem(value, 10, out int remainder);
+        chars[i] = (char)('0' + remainder);
         i++;
       } while (value != 0);
       for (int j = i - 1; j >= 0; j--)
@@ -261,11 +262,11 @@ namespace XmlTools
       WriteStartElement(name);
       if (value)
       {
-        this.writer.Write("True</");
+        this.writer.Write(">True</");
       }
       else
       {
-        this.writer.Write("False</");
+        this.writer.Write(">False</");
       }
       this.writer.Write(name);
       this.writer.Write('>');
@@ -354,8 +355,8 @@ namespace XmlTools
       Span<char> chars = stackalloc char[10];
       do
       {
-        chars[i] = (char)('0' + (value % 10));
-        value /= 10;
+        value = Math.DivRem(value, 10, out int remainder);
+        chars[i] = (char)('0' + remainder);
         i++;
       } while (value != 0);
       for (int j = i - 1; j >= 0; j--)
@@ -623,6 +624,7 @@ namespace XmlTools
     }
 #endif
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteStartAttributeImpl(string name)
     {
       this.writer.Write(' ');
@@ -632,6 +634,7 @@ namespace XmlTools
     }
 
 #if NETCOREAPP2_1 || NET5_0
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteXmlString(ReadOnlySpan<char> value, bool escape = true)
     {
       if (escape)
@@ -645,6 +648,7 @@ namespace XmlTools
     }
 #endif
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteXmlString(string? value, bool escape)
     {
       if (escape)
@@ -657,6 +661,7 @@ namespace XmlTools
       }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteXmlChar(char value, bool escape)
     {
       if (escape)
@@ -761,6 +766,7 @@ namespace XmlTools
       }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteEscapeSequence(char c)
     {
       switch (c)
