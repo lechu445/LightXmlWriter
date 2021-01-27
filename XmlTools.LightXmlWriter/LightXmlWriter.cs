@@ -14,13 +14,27 @@ namespace XmlTools
     private bool writingElement = false;
     private bool writingAttribute = false;
     private bool valueWritten = false;
+#if NETSTANDARD1_3
+    private char[] buffer;
+#endif
 
     public TextWriter Writer => this.writer;
 
     public LightXmlWriter(TextWriter writer)
     {
       this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
+#if NETSTANDARD1_3
+      this.buffer = new char[1024];
+#endif
     }
+
+#if NETSTANDARD1_3
+    public LightXmlWriter(TextWriter writer, char[] buffer)
+    {
+      this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
+      this.buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+    }
+#endif
 
     public void Dispose()
     {
@@ -168,7 +182,7 @@ namespace XmlTools
       this.writingElement = false;
     }
 
-#if NETCOREAPP2_1 || NET5_0
+#if !NETSTANDARD1_3
     public void WriteElementString(string name, ReadOnlySpan<char> value, bool escapeValue = true)
     {
       WriteStartElement(name);
@@ -203,7 +217,9 @@ namespace XmlTools
     {
       WriteStartElement(name);
       this.writer.Write('>');
-#if NETCOREAPP2_1 || NET5_0
+#if NETSTANDARD1_3
+      this.writer.Write(value);
+#else
       if (value < 0)
       {
         this.writer.Write('-');
@@ -221,8 +237,6 @@ namespace XmlTools
       {
         this.writer.Write(chars[j]);
       }
-#else
-      this.writer.Write(value);
 #endif
       this.writer.Write('<');
       this.writer.Write('/');
@@ -332,7 +346,7 @@ namespace XmlTools
       this.writer.Write('"');
     }
 
-#if NETCOREAPP2_1 || NET5_0
+#if !NETSTANDARD1_3
     public void WriteAttributeString(string name, ReadOnlySpan<char> value, bool escapeValue = true)
     {
       WriteStartAttributeImpl(name);
@@ -345,7 +359,9 @@ namespace XmlTools
     {
       WriteStartAttributeImpl(name);
 
-#if NETCOREAPP2_1 || NET5_0
+#if NETSTANDARD1_3
+      this.writer.Write(value);
+#else
       if (value < 0)
       {
         this.writer.Write('-');
@@ -363,8 +379,6 @@ namespace XmlTools
       {
         this.writer.Write(chars[j]);
       }
-#else
-      this.writer.Write(value);
 #endif
       this.writer.Write('"');
     }
@@ -558,7 +572,23 @@ namespace XmlTools
       this.valueWritten = true;
     }
 
-#if NETCOREAPP2_1 || NET5_0
+#if NETSTANDARD1_3
+    public void WriteValue(DateTime value, string? format = null)
+    {
+      if (this.writingAttribute)
+      {
+        this.writer.Write(value.ToString(format));
+        return;
+      }
+      if (this.writingElement)
+      {
+        this.writer.Write('>');
+        writingElement = false;
+      }
+      this.writer.Write(value.ToString(format));
+      this.valueWritten = true;
+    }
+#else
     public void WriteValue(DateTime value, ReadOnlySpan<char> format)
     {
       if (this.writingAttribute)
@@ -587,25 +617,7 @@ namespace XmlTools
         }
       }
     }
-#else
-    public void WriteValue(DateTime value, string? format = null)
-    {
-      if (this.writingAttribute)
-      {
-        this.writer.Write(value.ToString(format));
-        return;
-      }
-      if (this.writingElement)
-      {
-        this.writer.Write('>');
-        writingElement = false;
-      }
-      this.writer.Write(value.ToString(format));
-      this.valueWritten = true;
-    }
-#endif
 
-#if NETCOREAPP2_1 || NET5_0
     public void WriteValue(ReadOnlySpan<char> value, bool escape = true)
     {
       if (this.writingAttribute)
@@ -633,7 +645,7 @@ namespace XmlTools
       this.writer.Write('"');
     }
 
-#if NETCOREAPP2_1 || NET5_0
+#if !NETSTANDARD1_3
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteXmlString(ReadOnlySpan<char> value, bool escape = true)
     {
@@ -679,12 +691,13 @@ namespace XmlTools
 
     private static readonly char[] s_escapeChars = new[] { '<', '>', '\"', '\'', '&' };
 
-#if NETCOREAPP2_1 || NET5_0 || NET5_0
+#if !NETSTANDARD1_3
     private void WriteEscaped(ReadOnlySpan<char> str)
     {
       if (str.IsEmpty)
         return;
 
+      int strLen = str.Length;
       int index; // Pointer into the string that indicates the location of the current '&' character
       int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
 
@@ -703,14 +716,14 @@ namespace XmlTools
           }
           else
           {
-            this.writer.Write(str[newIndex..]);
+            this.writer.Write(str.Slice(newIndex, strLen - newIndex));
             return;
           }
         }
         else
         {
           foundAnyEscapeChar = true;
-          this.writer.Write(str[newIndex..index]);
+          this.writer.Write(str.Slice(newIndex, index - newIndex));
           WriteEscapeSequence(str[index]);
 
           newIndex = (index + 1);
@@ -743,10 +756,24 @@ namespace XmlTools
           }
           else
           {
-#if NETCOREAPP2_1 || NET5_0
-            this.writer.Write(str.AsSpan(newIndex, strLen - newIndex));
+#if NETSTANDARD1_3
+            if (TryCopyToBuffer(str, newIndex, index - newIndex, this.buffer))
+            {
+              this.writer.Write(this.buffer, 0, index - newIndex);
+            }
+            else
+            {
+              if (TryCopyToBuffer(str, newIndex, index - newIndex, this.buffer))
+              {
+                this.writer.Write(this.buffer, 0, index - newIndex);
+              }
+              else
+              {
+                this.writer.Write(str.Substring(newIndex, index - newIndex));
+              }
+            }
 #else
-            this.writer.Write(str.Substring(newIndex, strLen - newIndex));
+            this.writer.Write(str.AsSpan(newIndex, strLen - newIndex));
 #endif
             return;
           }
@@ -754,15 +781,35 @@ namespace XmlTools
         else
         {
           foundAnyEscapeChar = true;
-#if NETCOREAPP2_1 || NET5_0
-          this.writer.Write(str.AsSpan(newIndex, index - newIndex));
+#if NETSTANDARD1_3
+          if (TryCopyToBuffer(str, newIndex, index - newIndex, this.buffer))
+          {
+            this.writer.Write(this.buffer, 0, index - newIndex);
+          }
+          else
+          {
+            this.writer.Write(str.Substring(newIndex, index - newIndex));
+          }
 #else
-          this.writer.Write(str.Substring(newIndex, index - newIndex));
+          this.writer.Write(str.AsSpan(newIndex, index - newIndex));
 #endif
           WriteEscapeSequence(str[index]);
 
           newIndex = (index + 1);
         }
+      }
+    }
+
+    private static bool TryCopyToBuffer(string str, int startIndex, int count, char[] buffer)
+    {
+      if (str.Length > buffer.Length)
+      {
+        return false;
+      }
+      else
+      {
+        str.CopyTo(startIndex, buffer, 0, count);
+        return true;
       }
     }
 
