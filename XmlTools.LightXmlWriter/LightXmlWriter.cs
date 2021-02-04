@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Buffers;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace XmlTools
 {
   /// <summary>
-  /// Light implementation of XmlWriter equivalent designed to be as close as 
+  /// Light implementation of XmlWriter equivalent designed to be as close as
   /// possible of XmlWriter usage & behaviour with most common settings (no pretty-print, no xml declaration, etc.)
   /// </summary>
   public sealed class LightXmlWriter : IDisposable
@@ -20,24 +22,28 @@ namespace XmlTools
 
     public TextWriter Writer => this.writer;
 
+#if NETSTANDARD1_3
+    public LightXmlWriter(TextWriter writer, int bufferSize = 1024)
+    {
+      this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
+      this.buffer = ArrayPool<char>.Shared.Rent(bufferSize);
+    }
+#else
     public LightXmlWriter(TextWriter writer)
     {
       this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
-#if NETSTANDARD1_3
-      this.buffer = new char[1024];
-#endif
-    }
-
-#if NETSTANDARD1_3
-    public LightXmlWriter(TextWriter writer, char[] buffer)
-    {
-      this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
-      this.buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
     }
 #endif
 
     public void Dispose()
     {
+#if NETSTANDARD1_3
+      if (this.buffer != null)
+      {
+        ArrayPool<char>.Shared.Return(this.buffer);
+        this.buffer = null!;
+      }
+#endif
       this.writer.Dispose();
     }
 
@@ -107,10 +113,7 @@ namespace XmlTools
     {
       if (this.valueWritten)
       {
-        if (this.writingElement)
-        {
-          this.writer.Write('>');
-        }
+        Debug.Assert(!this.writingElement);
         this.writer.Write('<');
         this.writer.Write('/');
         this.writer.Write(name);
@@ -129,10 +132,7 @@ namespace XmlTools
     {
       if (this.valueWritten)
       {
-        if (this.writingElement)
-        {
-          this.writer.Write('>');
-        }
+        Debug.Assert(!this.writingElement);
         this.writer.Write('<');
         this.writer.Write('/');
         if (prefix != null)
@@ -606,7 +606,7 @@ namespace XmlTools
 
       void Write(DateTime value, ReadOnlySpan<char> format)
       {
-        Span<char> buffer = stackalloc char[20];
+        Span<char> buffer = stackalloc char[Math.Min(Math.Max(format.Length, 20), 255)];
         if (value.TryFormat(buffer, out int charsWritten, format))
         {
           this.writer.Write(buffer.Slice(0, charsWritten));
@@ -752,37 +752,18 @@ namespace XmlTools
           if (!foundAnyEscapeChar)
           {
             this.writer.Write(str);
-            return;
           }
           else
           {
-#if NETSTANDARD1_3
-            if (TryCopyToBuffer(str, newIndex, index - newIndex, this.buffer))
-            {
-              this.writer.Write(this.buffer, 0, index - newIndex);
-            }
-            else
-            {
-              if (TryCopyToBuffer(str, newIndex, index - newIndex, this.buffer))
-              {
-                this.writer.Write(this.buffer, 0, index - newIndex);
-              }
-              else
-              {
-                this.writer.Write(str.Substring(newIndex, index - newIndex));
-              }
-            }
-#else
-            this.writer.Write(str.AsSpan(newIndex, strLen - newIndex));
-#endif
-            return;
+            WriteEscaped(str, index, newIndex);
           }
+          return;
         }
         else
         {
           foundAnyEscapeChar = true;
 #if NETSTANDARD1_3
-          if (TryCopyToBuffer(str, newIndex, index - newIndex, this.buffer))
+          if (TryCopyToBuffer(str, newIndex, index - newIndex))
           {
             this.writer.Write(this.buffer, 0, index - newIndex);
           }
@@ -800,18 +781,37 @@ namespace XmlTools
       }
     }
 
-    private static bool TryCopyToBuffer(string str, int startIndex, int count, char[] buffer)
+    private void WriteEscaped(string str, int index, int newIndex)
     {
-      if (str.Length > buffer.Length)
+#if NETSTANDARD1_3
+      if (TryCopyToBuffer(str, newIndex, index - newIndex))
+      {
+        this.writer.Write(this.buffer, 0, index - newIndex);
+      }
+      else
+      {
+        this.writer.Write(str.Substring(newIndex, index - newIndex));
+      }
+#else
+      this.writer.Write(str.AsSpan(newIndex, str.Length - newIndex));
+#endif
+    }
+
+#if NETSTANDARD1_3
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool TryCopyToBuffer(string str, int startIndex, int count)
+    {
+      if (count > this.buffer.Length)
       {
         return false;
       }
       else
       {
-        str.CopyTo(startIndex, buffer, 0, count);
+        str.CopyTo(startIndex, this.buffer, 0, count);
         return true;
       }
     }
+#endif
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteEscapeSequence(char c)

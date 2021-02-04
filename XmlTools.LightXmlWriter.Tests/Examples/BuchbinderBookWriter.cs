@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.Linq;
+using System.Xml;
 
 namespace XmlTools.Test.Examples
 {
@@ -41,11 +42,9 @@ namespace XmlTools.Test.Examples
       writer.WriteElementString("DropOffDate", "2017-10-15", escapeValue: false);
       writer.WriteElementString("DropOffTime", "10:00", escapeValue: false);
 
-      var equipmentCodes = new string[] { "1", "2", "3" };
-      foreach (var code in equipmentCodes)
-      {
-        writer.WriteElementString("ConceptsIds", code);
-      }
+      writer.WriteElementString("ConceptsIds", "1");
+      writer.WriteElementString("ConceptsIds", "2");
+      writer.WriteElementString("ConceptsIds", "3");
 
       writer.WriteElementString("Flight", "LH12344");
       writer.WriteElementString("CarTypeId", "FDMR");
@@ -89,11 +88,9 @@ namespace XmlTools.Test.Examples
       writer.WriteElementString("DropOffDate", "2017-10-15");
       writer.WriteElementString("DropOffTime", "10:00");
 
-      var equipmentCodes = new string[] { "1", "2", "3" };
-      foreach (var code in equipmentCodes)
-      {
-        writer.WriteElementString("ConceptsIds", code);
-      }
+      writer.WriteElementString("ConceptsIds", "1");
+      writer.WriteElementString("ConceptsIds", "2");
+      writer.WriteElementString("ConceptsIds", "3");
 
       writer.WriteElementString("Flight", "LH12344");
       writer.WriteElementString("CarTypeId", "FDMR");

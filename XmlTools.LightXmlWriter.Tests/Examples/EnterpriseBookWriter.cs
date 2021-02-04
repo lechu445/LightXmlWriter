@@ -192,6 +192,7 @@ namespace XmlTools.Test.Examples
       writer.WriteEndElement("SpecialEquipPrefs");
     }
 
+#if !NETCOREAPP2_0
     private static void WriteArrivalDetails(LightXmlWriter writer, string val)
     {
       writer.WriteStartElement("ArrivalDetails");
@@ -204,5 +205,19 @@ namespace XmlTools.Test.Examples
 
       writer.WriteEndElement("ArrivalDetails");
     }
+#else
+    private static void WriteArrivalDetails(LightXmlWriter writer, string val)
+    {
+      writer.WriteStartElement("ArrivalDetails");
+      writer.WriteAttributeString("TransportationCode", 14);
+      writer.WriteAttributeString("Number", val.Substring(2));
+
+      writer.WriteStartElement("OperatingCompany");
+      writer.WriteAttributeString("Code", val.Substring(0, 2));
+      writer.WriteEndElement("OperatingCompany");
+
+      writer.WriteEndElement("ArrivalDetails");
+    }
+#endif
   }
 }
