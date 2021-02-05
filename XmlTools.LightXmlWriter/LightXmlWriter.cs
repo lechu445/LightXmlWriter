@@ -8,9 +8,9 @@ namespace XmlTools
 {
   /// <summary>
   /// Light implementation of XmlWriter equivalent designed to be as close as
-  /// possible of XmlWriter usage & behaviour with most common settings (no pretty-print, no xml declaration, etc.)
+  /// possible of XmlWriter usage &amp; behaviour with most common settings (no pretty-print, no xml declaration, etc.)
   /// </summary>
-  public sealed class LightXmlWriter : IDisposable
+  public sealed partial class LightXmlWriter : IDisposable
   {
     private readonly TextWriter writer;
     private bool writingElement = false;
@@ -20,20 +20,28 @@ namespace XmlTools
     private char[] buffer;
 #endif
 
-    public TextWriter Writer => this.writer;
-
 #if NETSTANDARD1_3
+    /// <summary>Initializes a new instance of the <see cref="LightXmlWriter"/> class.</summary>
+    /// <param name="writer">TextWriter which LightXmlWriter directly writes to.</param>
+    /// <param name="bufferSize">Size of internal buffer used for single operation on string.</param>
+    /// <exception cref="ArgumentNullException">writer property is null.</exception>
     public LightXmlWriter(TextWriter writer, int bufferSize = 1024)
     {
       this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
       this.buffer = ArrayPool<char>.Shared.Rent(bufferSize);
     }
 #else
+    /// <summary>Initializes a new instance of the <see cref="LightXmlWriter"/> class.</summary>
+    /// <param name="writer">TextWriter which LightXmlWriter directly writes to.</param>
+    /// <exception cref="ArgumentNullException">writer property is null.</exception>
     public LightXmlWriter(TextWriter writer)
     {
       this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
     }
 #endif
+
+    /// <summary>Gets TextWriter which LightXmlWriter directly writes to.</summary>
+    public TextWriter Writer => this.writer;
 
     public void Dispose()
     {
@@ -54,6 +62,7 @@ namespace XmlTools
       {
         this.writer.Write('>');
       }
+
       this.writer.Write('<');
       this.writer.Write(name);
       this.writingElement = true;
@@ -67,6 +76,7 @@ namespace XmlTools
       {
         this.writer.Write('>');
       }
+
       this.writer.Write('<');
       this.writer.Write(name);
       if (ns != null)
@@ -75,6 +85,7 @@ namespace XmlTools
         this.writer.Write(ns);
         this.writer.Write('"');
       }
+
       this.writingElement = true;
       this.valueWritten = false;
     }
@@ -86,12 +97,14 @@ namespace XmlTools
       {
         this.writer.Write('>');
       }
+
       this.writer.Write('<');
       if (prefix != null)
       {
         this.writer.Write(prefix);
         this.writer.Write(':');
       }
+
       this.writer.Write(name);
 
       if (ns != null && prefix != null)
@@ -113,7 +126,7 @@ namespace XmlTools
     {
       if (this.valueWritten)
       {
-        Debug.Assert(!this.writingElement);
+        Debug.Assert(!this.writingElement, "The value must always be false");
         this.writer.Write('<');
         this.writer.Write('/');
         this.writer.Write(name);
@@ -122,6 +135,7 @@ namespace XmlTools
       {
         this.writer.Write('/');
       }
+
       this.writer.Write('>');
       this.valueWritten = true;
       this.writingElement = false;
@@ -132,7 +146,7 @@ namespace XmlTools
     {
       if (this.valueWritten)
       {
-        Debug.Assert(!this.writingElement);
+        Debug.Assert(!this.writingElement, "The value must always be false");
         this.writer.Write('<');
         this.writer.Write('/');
         if (prefix != null)
@@ -140,12 +154,14 @@ namespace XmlTools
           this.writer.Write(prefix);
           this.writer.Write(':');
         }
+
         this.writer.Write(name);
       }
       else if (this.writingElement)
       {
         this.writer.Write('/');
       }
+
       this.writer.Write('>');
       this.valueWritten = true;
       this.writingElement = false;
@@ -167,6 +183,7 @@ namespace XmlTools
         this.writer.Write('>');
         this.valueWritten = true;
       }
+
       this.writingElement = false;
     }
 
@@ -207,6 +224,7 @@ namespace XmlTools
         this.writer.Write(prefix);
         this.writer.Write(':');
       }
+
       this.writer.Write(name);
       this.writer.Write('>');
       this.valueWritten = true;
@@ -225,6 +243,7 @@ namespace XmlTools
         this.writer.Write('-');
         value = -value;
       }
+
       int i = 0;
       Span<char> chars = stackalloc char[10];
       do
@@ -232,11 +251,14 @@ namespace XmlTools
         value = Math.DivRem(value, 10, out int remainder);
         chars[i] = (char)('0' + remainder);
         i++;
-      } while (value != 0);
+      }
+      while (value != 0);
+
       for (int j = i - 1; j >= 0; j--)
       {
         this.writer.Write(chars[j]);
       }
+
 #endif
       this.writer.Write('<');
       this.writer.Write('/');
@@ -282,6 +304,7 @@ namespace XmlTools
       {
         this.writer.Write(">False</");
       }
+
       this.writer.Write(name);
       this.writer.Write('>');
       this.valueWritten = true;
@@ -302,6 +325,7 @@ namespace XmlTools
         this.writer.Write(prefix);
         this.writer.Write(':');
       }
+
       this.writer.Write(name);
       this.writer.Write('=');
       this.writer.Write('"');
@@ -332,6 +356,7 @@ namespace XmlTools
           this.writer.Write(':');
           this.writer.Write(prefix);
         }
+
         this.writer.Write('=');
         this.writer.Write('"');
         this.writer.Write(ns);
@@ -367,6 +392,7 @@ namespace XmlTools
         this.writer.Write('-');
         value = -value;
       }
+
       int i = 0;
       Span<char> chars = stackalloc char[10];
       do
@@ -374,7 +400,9 @@ namespace XmlTools
         value = Math.DivRem(value, 10, out int remainder);
         chars[i] = (char)('0' + remainder);
         i++;
-      } while (value != 0);
+      }
+      while (value != 0);
+
       for (int j = i - 1; j >= 0; j--)
       {
         this.writer.Write(chars[j]);
@@ -435,11 +463,13 @@ namespace XmlTools
         WriteXmlString(value, escape);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       WriteXmlString(value, escape);
       this.valueWritten = true;
     }
@@ -451,11 +481,13 @@ namespace XmlTools
         this.writer.Write(value, index, count);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       this.writer.Write(value, index, count);
       this.valueWritten = true;
     }
@@ -467,11 +499,13 @@ namespace XmlTools
         writeAction(this.writer, arg);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       writeAction(this.writer, arg);
       this.valueWritten = true;
     }
@@ -483,11 +517,13 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       this.writer.Write(value);
       this.valueWritten = true;
     }
@@ -499,11 +535,13 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       this.writer.Write(value);
       this.valueWritten = true;
     }
@@ -515,11 +553,13 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       this.writer.Write(value);
       this.valueWritten = true;
     }
@@ -531,11 +571,13 @@ namespace XmlTools
         WriteXmlChar(value, escape);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       WriteXmlChar(value, escape);
       this.valueWritten = true;
     }
@@ -547,11 +589,13 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       this.writer.Write(value);
       this.valueWritten = true;
     }
@@ -563,11 +607,13 @@ namespace XmlTools
         this.writer.Write(value);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       this.writer.Write(value);
       this.valueWritten = true;
     }
@@ -580,11 +626,13 @@ namespace XmlTools
         this.writer.Write(value.ToString(format));
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       this.writer.Write(value.ToString(format));
       this.valueWritten = true;
     }
@@ -596,11 +644,13 @@ namespace XmlTools
         Write(value, format);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       Write(value, format);
       this.valueWritten = true;
 
@@ -625,11 +675,13 @@ namespace XmlTools
         WriteXmlString(value, escape);
         return;
       }
+
       if (this.writingElement)
       {
         this.writer.Write('>');
         writingElement = false;
       }
+
       WriteXmlString(value, escape);
       this.writer.Write(value);
       this.valueWritten = true;
@@ -685,146 +737,5 @@ namespace XmlTools
         this.writer.Write(value);
       }
     }
-
-#region WriteEscaped(value)
-    // This is port of SecurityElement.Escape(value) that writes directly into this.writer instead of string creation
-
-    private static readonly char[] s_escapeChars = new[] { '<', '>', '\"', '\'', '&' };
-
-#if !NETSTANDARD1_3
-    private void WriteEscaped(ReadOnlySpan<char> str)
-    {
-      if (str.IsEmpty)
-        return;
-
-      int strLen = str.Length;
-      int index; // Pointer into the string that indicates the location of the current '&' character
-      int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
-
-      bool foundAnyEscapeChar = false;
-
-      while (true)
-      {
-        index = str.IndexOfAny(s_escapeChars.AsSpan(newIndex));
-
-        if (index == -1)
-        {
-          if (!foundAnyEscapeChar)
-          {
-            this.writer.Write(str);
-            return;
-          }
-          else
-          {
-            this.writer.Write(str.Slice(newIndex, strLen - newIndex));
-            return;
-          }
-        }
-        else
-        {
-          foundAnyEscapeChar = true;
-          this.writer.Write(str.Slice(newIndex, index - newIndex));
-          WriteEscapeSequence(str[index]);
-
-          newIndex = (index + 1);
-        }
-      }
-    }
-#endif
-
-    private void WriteEscaped(string? str)
-    {
-      if (str == null)
-        return;
-
-      int strLen = str.Length;
-      int index; // Pointer into the string that indicates the location of the current '&' character
-      int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
-
-      bool foundAnyEscapeChar = false;
-
-      while (true)
-      {
-        index = str.IndexOfAny(s_escapeChars, newIndex);
-
-        if (index == -1)
-        {
-          if (!foundAnyEscapeChar)
-          {
-            this.writer.Write(str);
-          }
-          else
-          {
-            WriteEscaped(str, index, newIndex);
-          }
-          return;
-        }
-        else
-        {
-          foundAnyEscapeChar = true;
-#if NETSTANDARD1_3
-          if (TryCopyToBuffer(str, newIndex, index - newIndex))
-          {
-            this.writer.Write(this.buffer, 0, index - newIndex);
-          }
-          else
-          {
-            this.writer.Write(str.Substring(newIndex, index - newIndex));
-          }
-#else
-          this.writer.Write(str.AsSpan(newIndex, index - newIndex));
-#endif
-          WriteEscapeSequence(str[index]);
-
-          newIndex = (index + 1);
-        }
-      }
-    }
-
-    private void WriteEscaped(string str, int index, int newIndex)
-    {
-#if NETSTANDARD1_3
-      if (TryCopyToBuffer(str, newIndex, index - newIndex))
-      {
-        this.writer.Write(this.buffer, 0, index - newIndex);
-      }
-      else
-      {
-        this.writer.Write(str.Substring(newIndex, index - newIndex));
-      }
-#else
-      this.writer.Write(str.AsSpan(newIndex, str.Length - newIndex));
-#endif
-    }
-
-#if NETSTANDARD1_3
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool TryCopyToBuffer(string str, int startIndex, int count)
-    {
-      if (count > this.buffer.Length)
-      {
-        return false;
-      }
-      else
-      {
-        str.CopyTo(startIndex, this.buffer, 0, count);
-        return true;
-      }
-    }
-#endif
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void WriteEscapeSequence(char c)
-    {
-      switch (c)
-      {
-        case '<': this.writer.Write("&lt;"); break;
-        case '>': this.writer.Write("&gt;"); break;
-        case '\"': this.writer.Write("&quot;"); break;
-        case '&': this.writer.Write("&amp;"); break;
-        default: this.writer.Write(c); break;
-      }
-    }
-#endregion
   }
 }
