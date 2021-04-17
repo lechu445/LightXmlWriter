@@ -27,6 +27,10 @@ namespace XmlTools
       this.valueWritten = true;
     }
 
+    public void WriteValue(char[] value, int index, int count)
+      => WriteChars(value, index, count);
+
+    // method exists for compatabiliti with XmlWWriter
     public void WriteChars(char[] value, int index, int count)
     {
       if (this.writingAttribute)
@@ -236,7 +240,6 @@ namespace XmlTools
       }
 
       WriteXmlString(value, escape);
-      this.writer.Write(value);
       this.valueWritten = true;
     }
 #endif

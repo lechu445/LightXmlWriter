@@ -18,7 +18,6 @@ namespace XmlTools
         return;
       }
 
-      int strLen = str.Length;
       int index; // Pointer into the string that indicates the location of the current '&' character
       int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
 
@@ -26,7 +25,7 @@ namespace XmlTools
 
       while (true)
       {
-        index = str.IndexOfAny(EscapeChars.AsSpan(newIndex));
+        index = str.Slice(newIndex).IndexOfAny(EscapeChars);
 
         if (index == -1)
         {
@@ -37,7 +36,7 @@ namespace XmlTools
           }
           else
           {
-            this.writer.Write(str.Slice(newIndex, strLen - newIndex));
+            this.writer.Write(str.Slice(newIndex));
             return;
           }
         }
