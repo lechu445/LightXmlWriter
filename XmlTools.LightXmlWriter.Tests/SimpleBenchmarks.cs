@@ -1,8 +1,8 @@
-﻿using BenchmarkDotNet.Attributes;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Xml;
+using BenchmarkDotNet.Attributes;
 using Xunit;
 
 namespace XmlTools.Benchmarks

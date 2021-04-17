@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Xml;
+﻿using System.Xml;
 
 namespace XmlTools.Test.Examples
 {

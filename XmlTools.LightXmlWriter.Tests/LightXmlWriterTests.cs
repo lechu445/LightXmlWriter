@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using System.Xml.Linq;
-using Xunit;
 using XmlTools.Test.Examples;
+using Xunit;
 
 namespace XmlTools.Tests
 {

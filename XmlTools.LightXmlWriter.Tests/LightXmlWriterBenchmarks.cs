@@ -1,6 +1,6 @@
-﻿using BenchmarkDotNet.Attributes;
-using System.IO;
+﻿using System.IO;
 using System.Xml;
+using BenchmarkDotNet.Attributes;
 using XmlTools.Test.Examples;
 
 namespace XmlTools.Benchmarks

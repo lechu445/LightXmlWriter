@@ -12,7 +12,6 @@ namespace XmlTools.Tests.TestsForMethods
       var sb = new StringBuilder();
       using (var writer = new LightXmlWriter(new StringWriter(sb)))
       {
-
         writer.WriteEndElement(null);
         Assert.Equal(">", sb.ToString());
         sb.Clear();
@@ -81,7 +80,6 @@ namespace XmlTools.Tests.TestsForMethods
       var sb = new StringBuilder();
       using (var writer = new LightXmlWriter(new StringWriter(sb)))
       {
-
         writer.WriteEndElement(null, null);
         Assert.Equal(">", sb.ToString());
         sb.Clear();
