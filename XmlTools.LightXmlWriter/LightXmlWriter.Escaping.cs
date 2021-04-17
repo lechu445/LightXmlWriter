@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace XmlTools
@@ -60,7 +60,6 @@ namespace XmlTools
         return;
       }
 
-      int strLen = str.Length;
       int index; // Pointer into the string that indicates the location of the current '&' character
       int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
 
@@ -78,7 +77,7 @@ namespace XmlTools
           }
           else
           {
-            WriteEscaped(str, index, newIndex);
+            WriteEscaped(str, newIndex);
           }
 
           return;
@@ -105,16 +104,16 @@ namespace XmlTools
       }
     }
 
-    private void WriteEscaped(string str, int index, int newIndex)
+    private void WriteEscaped(string str, int newIndex)
     {
 #if NETSTANDARD1_3
-      if (TryCopyToBuffer(str, newIndex, index - newIndex))
+      if (TryCopyToBuffer(str, newIndex, str.Length - newIndex))
       {
-        this.writer.Write(this.buffer, 0, index - newIndex);
+        this.writer.Write(this.buffer, 0, str.Length - newIndex);
       }
       else
       {
-        this.writer.Write(str.Substring(newIndex, index - newIndex));
+        this.writer.Write(str.Substring(newIndex, str.Length - newIndex));
       }
 #else
       this.writer.Write(str.AsSpan(newIndex, str.Length - newIndex));

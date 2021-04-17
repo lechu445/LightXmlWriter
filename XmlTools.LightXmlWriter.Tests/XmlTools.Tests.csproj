@@ -4,13 +4,22 @@
     <GenerateProgramFile>false</GenerateProgramFile>
     <OutputType>Exe</OutputType>
     <StartupObject>XmlTools.Test.Program</StartupObject>
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
   </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netcoreapp2.1' ">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\XmlTools.LightXmlWriter\XmlTools.csproj" />
   </ItemGroup>
