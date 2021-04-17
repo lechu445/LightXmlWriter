@@ -1,8 +1,11 @@
-﻿using System;
-using System.Buffers;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+
+#if NETSTANDARD1_3
+using System.Buffers;
+#endif
 
 namespace XmlTools
 {
