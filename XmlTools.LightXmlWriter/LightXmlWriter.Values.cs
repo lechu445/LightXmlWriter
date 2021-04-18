@@ -59,7 +59,11 @@ namespace XmlTools
 
       if (escape)
       {
+#if NETSTANDARD1_3
         WriteEscaped(new string(value, index, count), EscapeCharsForValue, WriteEscapeSequenceForValue);
+#else
+        WriteEscaped(value.AsSpan(index, count), EscapeCharsForValue, WriteEscapeSequenceForValue);
+#endif
       }
       else
       {
