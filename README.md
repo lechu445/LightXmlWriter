@@ -1,5 +1,5 @@
 # LightXmlWriter
-This is a replacement of XmlWriter which can be useful in high-performance scenarios. Therefore there are several goals to reach:
+This is a replacement of [XmlWriter](https://docs.microsoft.com/pl-pl/dotnet/api/system.xml.xmlwriter) which can be useful in high-performance scenarios. Therefore there are several goals to reach:
 - high performance
     - zero allocation
     - be faster than XmlWriter
