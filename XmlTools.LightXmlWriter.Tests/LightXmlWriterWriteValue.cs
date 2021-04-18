@@ -44,9 +44,9 @@ namespace XmlTools.Tests
     }
 
     [Fact]
-    public void WriteValue_Randomised()
+    public void WriteValue_Different_Characters()
     {
-      var s = GenerateRandomString((ushort)DateTime.UtcNow.Ticks % 10000);
+      var s = TestString;
       Assert.Equal(WriteValueUsingXmlWriter(w => w.WriteValue(s)), WriteValueUsingLightXmlWriter(w => w.WriteValue(s)));
       Assert.Equal(WriteValueUsingXmlWriter(w => w.WriteChars(s.ToCharArray(), 0, s.Length)), WriteValueUsingLightXmlWriter(w => w.WriteChars(s.ToCharArray(), 0, s.Length)));
 #if !NET462
@@ -78,20 +78,24 @@ namespace XmlTools.Tests
       return sb.ToString();
     }
 
-    private static string GenerateRandomString(int length)
+    private static readonly string TestString = GenerateTestString();
+
+    private static string GenerateTestString()
     {
-      var sb = new StringBuilder(length);
-      Random random = new Random();
+      var sb = new StringBuilder(126);
 
       char letter;
 
-      for (int i = 0; i < length; i++)
+      for (int i = 32; i < 126; i++)
       {
-        double flt = random.NextDouble();
-        int shift = Convert.ToInt32(Math.Floor(25 * flt));
-        letter = Convert.ToChar(shift + 65);
+        letter = Convert.ToChar(i);
         sb.Append(letter);
       }
+
+      sb.Append('ą');
+      sb.Append('ó');
+      sb.Append('ł');
+
       return sb.ToString();
     }
   }

@@ -23,19 +23,27 @@ namespace XmlTools
         writingElement = false;
       }
 
-      WriteXmlString(value, escape);
+      WriteXmlValueString(value, escape);
       this.valueWritten = true;
     }
 
     public void WriteValue(char[] value, int index, int count)
       => WriteChars(value, index, count);
 
-    // method exists for compatabiliti with XmlWWriter
-    public void WriteChars(char[] value, int index, int count)
+    // method exists for compatability with XmlWWriter
+    public void WriteChars(char[] value, int index, int count, bool escape = true)
     {
       if (this.writingAttribute)
       {
-        this.writer.Write(value, index, count);
+        if (escape)
+        {
+          WriteEscaped(new string(value, index, count), EscapeChars, WriteEscapeSequence);
+        }
+        else
+        {
+          this.writer.Write(value, index, count);
+        }
+
         return;
       }
 
@@ -45,7 +53,15 @@ namespace XmlTools
         writingElement = false;
       }
 
-      this.writer.Write(value, index, count);
+      if (escape)
+      {
+        WriteEscaped(new string(value, index, count), EscapeCharsForValue, WriteEscapeSequenceForValue);
+      }
+      else
+      {
+        this.writer.Write(value, index, count);
+      }
+
       this.valueWritten = true;
     }
 
@@ -135,7 +151,7 @@ namespace XmlTools
         writingElement = false;
       }
 
-      WriteXmlChar(value, escape);
+      WriteXmlCharValue(value, escape);
       this.valueWritten = true;
     }
 
@@ -239,7 +255,7 @@ namespace XmlTools
         writingElement = false;
       }
 
-      WriteXmlString(value, escape);
+      WriteXmlValueString(value, escape);
       this.valueWritten = true;
     }
 #endif
@@ -250,7 +266,20 @@ namespace XmlTools
     {
       if (escape)
       {
-        WriteEscaped(value);
+        WriteEscaped(value, EscapeChars, WriteEscapeSequence);
+      }
+      else
+      {
+        this.writer.Write(value);
+      }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void WriteXmlValueString(ReadOnlySpan<char> value, bool escape = true)
+    {
+      if (escape)
+      {
+        WriteEscaped(value, EscapeCharsForValue, WriteEscapeSequenceForValue);
       }
       else
       {
@@ -260,11 +289,24 @@ namespace XmlTools
 #endif
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void WriteXmlValueString(string? value, bool escape)
+    {
+      if (escape)
+      {
+        WriteEscaped(value, EscapeCharsForValue, WriteEscapeSequenceForValue);
+      }
+      else
+      {
+        this.writer.Write(value);
+      }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteXmlString(string? value, bool escape)
     {
       if (escape)
       {
-        WriteEscaped(value);
+        WriteEscaped(value, EscapeChars, WriteEscapeSequence);
       }
       else
       {
@@ -278,6 +320,19 @@ namespace XmlTools
       if (escape)
       {
         WriteEscapeSequence(value);
+      }
+      else
+      {
+        this.writer.Write(value);
+      }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void WriteXmlCharValue(char value, bool escape)
+    {
+      if (escape)
+      {
+        WriteEscapeSequenceForValue(value);
       }
       else
       {
