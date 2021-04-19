@@ -17,7 +17,8 @@ namespace XmlTools.Tests
 
       Assert.Equal("<Person>test</Person>", WriteValue(w => w.WriteValue("test")));
       Assert.Equal("<Person>x</Person>", WriteValue(w => w.WriteValue('x', escape: false)));
-      Assert.Equal("<Person>&quot;</Person>", WriteValue(w => w.WriteValue('"')));
+      Assert.Equal("<Person>&amp;</Person>", WriteValue(w => w.WriteValue('&')));
+      Assert.Equal("<Person>\"</Person>", WriteValue(w => w.WriteValue('"')));
       Assert.Equal("<Person>te&amp;st</Person>", WriteValue(w => w.WriteValue("te&st", escape: true)));
       Assert.Equal("<Person>te&st</Person>", WriteValue(w => w.WriteValue("te&st", escape: false)));
       Assert.Equal("<Person>True</Person>", WriteValue(w => w.WriteValue(true)));
@@ -52,6 +53,10 @@ namespace XmlTools.Tests
 #if !NET462
       Assert.Equal(WriteValueUsingXmlWriter(w => w.WriteValue(s)), WriteValueUsingLightXmlWriter(w => w.WriteValue(s.AsSpan())));
 #endif
+      foreach (var ch in TestString)
+      {
+        Assert.Equal(WriteValueUsingXmlWriter(w => w.WriteValue(ch.ToString())), WriteValueUsingLightXmlWriter(w => w.WriteValue(ch)));
+      }
     }
 
     private static string WriteValueUsingLightXmlWriter(Action<LightXmlWriter> writeAction)
