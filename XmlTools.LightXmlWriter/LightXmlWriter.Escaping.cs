@@ -12,7 +12,7 @@ namespace XmlTools
     private static readonly char[] EscapeCharsForValue = new[] { '<', '>', '\'', '&' };
 
 #if !NETSTANDARD1_3
-    private void WriteEscaped(ReadOnlySpan<char> str, char[] escapeChars, Action<char> writeEscaped)
+    private void WriteEscaped(ReadOnlySpan<char> str, bool escapeValue)
     {
       if (str.IsEmpty)
       {
@@ -21,6 +21,8 @@ namespace XmlTools
 
       int index; // Pointer into the string that indicates the location of the current '&' character
       int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
+
+      char[] escapeChars = escapeValue ? EscapeCharsForValue : EscapeChars;
 
       while (true)
       {
@@ -35,7 +37,14 @@ namespace XmlTools
         else
         {
           this.writer.Write(str.Slice(0, index));
-          writeEscaped(str[index]);
+          if (escapeValue)
+          {
+            WriteEscapeSequenceForValue(str[index]);
+          }
+          else
+          {
+            WriteEscapeSequence(str[index]);
+          }
 
           newIndex = index + 1;
         }
@@ -43,7 +52,7 @@ namespace XmlTools
     }
 #endif
 
-    private void WriteEscaped(string? str, char[] escapeChars, Action<char> writeEscaped)
+    private void WriteEscaped(string? str, bool escapeValue)
     {
       if (str == null)
       {
@@ -54,6 +63,8 @@ namespace XmlTools
       int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
 
       bool foundAnyEscapeChar = false;
+
+      char[] escapeChars = escapeValue ? EscapeCharsForValue : EscapeChars;
 
       while (true)
       {
@@ -87,7 +98,14 @@ namespace XmlTools
 #else
           this.writer.Write(str.AsSpan(newIndex, index - newIndex));
 #endif
-          writeEscaped(str[index]);
+          if (escapeValue)
+          {
+            WriteEscapeSequenceForValue(str[index]);
+          }
+          else
+          {
+            WriteEscapeSequence(str[index]);
+          }
 
           newIndex = index + 1;
         }

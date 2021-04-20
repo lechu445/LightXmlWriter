@@ -192,7 +192,7 @@ namespace XmlTools.Test.Examples
       writer.WriteEndElement("SpecialEquipPrefs");
     }
 
-#if !NETCOREAPP2_0 && !NET462
+#if !NET462
     private static void WriteArrivalDetails(LightXmlWriter writer, string val)
     {
       writer.WriteStartElement("ArrivalDetails");

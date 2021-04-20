@@ -28,7 +28,8 @@ namespace XmlTools.Tests
       Assert.Equal("<Person>-9223372036854775808</Person>", WriteValue(w => w.WriteValue(long.MinValue)));
       Assert.Equal("<Person>9999-12-31</Person>", WriteValue(w => w.WriteValue(DateTime.MaxValue, "yyyy-MM-dd")));
       Assert.Equal("<Person>test</Person>", WriteValue(w => w.WriteValue("test", (wr, state) => wr.Write(state))));
-      Assert.Equal("<Person>test</Person>", WriteValue(w => w.WriteValue("test".ToCharArray(), 0, "test".Length)));
+      Assert.Equal("<Person>te&amp;st</Person>", WriteValue(w => w.WriteValue("te&st".ToCharArray(), 0, "te&st".Length)));
+      Assert.Equal("<Person>te&st</Person>", WriteValue(w => w.WriteValue("te&st".ToCharArray(), 0, "te&st".Length, escape: false)));
 
 #if NETCOREAPP3_1
       Assert.Equal("<Person>-1.7976931348623157E+308</Person>", WriteValue(w => w.WriteValue(double.MinValue)));

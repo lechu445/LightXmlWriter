@@ -8,7 +8,10 @@ namespace XmlTools
   /// </summary>
   public sealed partial class LightXmlWriter
   {
-    // Writes out a start tag with the specified local name with no namespace.
+    /// <summary>
+    /// Writes out a start tag with the specified local name.
+    /// </summary>
+    /// <param name="name">The local name of the element.</param>
     public void WriteStartElement(string name)
     {
       if (this.writingElement)
@@ -22,7 +25,11 @@ namespace XmlTools
       this.valueWritten = false;
     }
 
-    // Writes out the specified start tag and associates it with the given namespace.
+    /// <summary>
+    /// Writes out the specified start tag and associates it with the given namespace.
+    /// </summary>
+    /// <param name="name">The local name of the element.</param>
+    /// <param name="ns">The namespace URI to associate with the element.</param>
     public void WriteStartElement(string name, string? ns)
     {
       if (this.writingElement)

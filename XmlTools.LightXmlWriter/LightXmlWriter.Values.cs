@@ -27,8 +27,17 @@ namespace XmlTools
       this.valueWritten = true;
     }
 
-    public void WriteValue(char[] value, int index, int count)
-      => WriteChars(value, index, count);
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="index"></param>
+    /// <param name="count"></param>
+    /// <param name="escape"></param>
+    /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
+    /// <exception cref="IndexOutOfRangeException"></exception>
+    public void WriteValue(char[] value, int index, int count, bool escape = true)
+      => WriteChars(value, index, count, escape);
 
     // method exists for compatability with XmlWWriter
     public void WriteChars(char[] value, int index, int count, bool escape = true)
@@ -38,9 +47,9 @@ namespace XmlTools
         if (escape)
         {
 #if NETSTANDARD1_3
-          WriteEscaped(new string(value, index, count), EscapeChars, WriteEscapeSequence);
+          WriteEscaped(new string(value, index, count), escapeValue: false);
 #else
-          WriteEscaped(value.AsSpan(index, count), EscapeChars, WriteEscapeSequence);
+          WriteEscaped(value.AsSpan(index, count), escapeValue: false);
 #endif
         }
         else
@@ -60,9 +69,9 @@ namespace XmlTools
       if (escape)
       {
 #if NETSTANDARD1_3
-        WriteEscaped(new string(value, index, count), EscapeCharsForValue, WriteEscapeSequenceForValue);
+        WriteEscaped(new string(value, index, count), escapeValue: true);
 #else
-        WriteEscaped(value.AsSpan(index, count), EscapeCharsForValue, WriteEscapeSequenceForValue);
+        WriteEscaped(value.AsSpan(index, count), escapeValue: true);
 #endif
       }
       else
@@ -274,7 +283,7 @@ namespace XmlTools
     {
       if (escape)
       {
-        WriteEscaped(value, EscapeChars, WriteEscapeSequence);
+        WriteEscaped(value, escapeValue: false);
       }
       else
       {
@@ -287,7 +296,7 @@ namespace XmlTools
     {
       if (escape)
       {
-        WriteEscaped(value, EscapeCharsForValue, WriteEscapeSequenceForValue);
+        WriteEscaped(value, escapeValue: true);
       }
       else
       {
@@ -301,7 +310,7 @@ namespace XmlTools
     {
       if (escape)
       {
-        WriteEscaped(value, EscapeCharsForValue, WriteEscapeSequenceForValue);
+        WriteEscaped(value, escapeValue: true);
       }
       else
       {
@@ -314,7 +323,7 @@ namespace XmlTools
     {
       if (escape)
       {
-        WriteEscaped(value, EscapeChars, WriteEscapeSequence);
+        WriteEscaped(value, escapeValue: false);
       }
       else
       {
@@ -338,7 +347,8 @@ namespace XmlTools
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteXmlCharValue(char value, bool escape)
     {
-      if (escape)
+      // handle inconsistent behaviour of XmlReader for '"' and "\""
+      if (escape && value != '"')
       {
         WriteEscapeSequenceForValue(value);
       }
