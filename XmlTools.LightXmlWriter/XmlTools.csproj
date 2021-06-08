@@ -2,16 +2,22 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard1.3;netstandard2.1;netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
     <PackageId>LightXmlWriter</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors>lechu445</Authors>
     <Product>LightXmlWriter</Product>
-    <Description>This is a light implementation of XmlWriter equivalent designed to be as close as possible of XmlWriter usage &amp; behaviour with most common settings (no pretty-print, no xml declaration, etc.)</Description>
+    <Description>A light equivalent of XmlWriter designed to be as close as possible of XmlWriter usage &amp; behaviour with most common settings (no pretty-print, no xml declaration, etc.)</Description>
     <PackageProjectUrl>https://github.com/lechu445/LightXmlWriter</PackageProjectUrl>
-    <DebugType>portable</DebugType>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <DebugType>embedded</DebugType>
     <LangVersion>9.0</LangVersion>
-    <PackageTags>xml, XmlWriter, light</PackageTags>
-    <Version>1.0.0</Version>
+    <PackageTags>xml, XmlWriter, light, fast</PackageTags>
+    <Version>1.0.2</Version>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReleaseNotes>- optimization in some cases
+- added SourceLink
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -24,6 +30,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

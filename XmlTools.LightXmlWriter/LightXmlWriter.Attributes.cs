@@ -48,15 +48,18 @@ namespace XmlTools
       WriteEndAttribute();
       if (!string.IsNullOrEmpty(ns))
       {
-        this.writer.Write(" xmlns");
         if (prefix != null)
         {
-          this.writer.Write(':');
+          this.writer.Write(" xmlns:");
           this.writer.Write(prefix);
+          this.writer.Write('=');
+          this.writer.Write('"');
+        }
+        else
+        {
+          this.writer.Write(" xmlns=\"");
         }
 
-        this.writer.Write('=');
-        this.writer.Write('"');
         this.writer.Write(ns);
         this.writer.Write('"');
       }

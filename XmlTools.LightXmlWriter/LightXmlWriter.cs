@@ -65,5 +65,7 @@ namespace XmlTools
     {
       WriteValue(value, escape);
     }
+
+    public void Flush() => this.writer.Flush();
   }
 }

@@ -2,7 +2,7 @@
 
 namespace XmlTools.Test.Examples
 {
-  public static class BuchbinderBookWriter
+  public static class Simple_XML_Writer
   {
     public static void Write(LightXmlWriter writer)
     {
@@ -47,7 +47,7 @@ namespace XmlTools.Test.Examples
 
       writer.WriteElementString("Flight", "LH12344");
       writer.WriteElementString("CarTypeId", "FDMR");
-      writer.WriteElementString("RateId", "FTI TEST");
+      writer.WriteElementString("RateId", "XXX TEST");
     }
 
     public static void Write(XmlWriter writer)

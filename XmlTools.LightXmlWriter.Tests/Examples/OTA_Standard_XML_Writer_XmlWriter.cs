@@ -2,7 +2,7 @@
 
 namespace XmlTools.Test.Examples
 {
-  public static class EnterpriseBookXmlWriter
+  public static class OTA_Standard_XML_Writer_XmlWriter
   {
     public static void Write(XmlWriter writer)
     {

@@ -39,7 +39,7 @@ namespace XmlTools
     public void WriteValue(char[] value, int index, int count, bool escape = true)
       => WriteChars(value, index, count, escape);
 
-    // method exists for compatability with XmlWWriter
+    // method exists for compatability with XmlWriter
     public void WriteChars(char[] value, int index, int count, bool escape = true)
     {
       if (this.writingAttribute)
@@ -347,8 +347,7 @@ namespace XmlTools
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteXmlCharValue(char value, bool escape)
     {
-      // handle inconsistent behaviour of XmlReader for '"' and "\""
-      if (escape && value != '"')
+      if (escape)
       {
         WriteEscapeSequenceForValue(value);
       }

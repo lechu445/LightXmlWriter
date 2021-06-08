@@ -1,5 +1,5 @@
 # LightXmlWriter
-This is a replacement of [XmlWriter](https://docs.microsoft.com/pl-pl/dotnet/api/system.xml.xmlwriter) which can be useful in high-performance scenarios. Therefore there are several goals to reach:
+This is a replacement of [XmlWriter](https://docs.microsoft.com/en-us/dotnet/api/system.xml.xmlwriter) which can be useful in high-performance scenarios. Therefore there are several goals to reach:
 - high performance
     - zero allocation
     - be faster than XmlWriter
@@ -16,10 +16,10 @@ This is a replacement of [XmlWriter](https://docs.microsoft.com/pl-pl/dotnet/api
 
 EnterpriseLightXmlWriterBenchmarks.LightXmlWriter_Write_Xml
 ```
-|                   Method |      Mean |     Error |    StdDev |    Median | Gen 0 | Gen 1 | Gen 2 | Allocated |
-|------------------------- |----------:|----------:|----------:|----------:|------:|------:|------:|----------:|
-| LightXmlWriter_Write_Xml |  8.585 us | 0.1733 us | 0.2429 us |  8.600 us |     - |     - |     - |         - |
-|      XmlWriter_Write_Xml | 17.923 us | 0.4765 us | 1.3671 us | 18.300 us |     - |     - |     - |    1288 B |
+|         Method |      Mean |     Error |    StdDev |  Median | Gen 0 | Gen 1 | Gen 2 | Allocated |
+|--------------- |----------:|----------:|----------:|--------:|------:|------:|------:|----------:|
+| LightXmlWriter |  8.585 us | 0.1733 us | 0.2429 us |  8.6 us |     - |     - |     - |         - |
+|      XmlWriter | 17.923 us | 0.4765 us | 1.3671 us | 18.3 us |     - |     - |     - |    1288 B |
 ```
 
 ### Similarities
@@ -72,7 +72,7 @@ writer.WriteEndElement("Person");
 
 * LightXmlWriter does not use XmlWriterSettings
 
-It only uses its default settings, that's why it is light :)
+It only uses its default settings - that's why it is light.
 What are the default settings?
 It does not do any validation at run-time, no pretty-print of output, no XML declaration. So it is just simple writer.
 
@@ -116,7 +116,7 @@ writer.WriteElementString("Code", "ABCD", escapeValue: false);
 //produces <Code>ABCD</Code>
 ```
 
-## Migration to LightXmlWriter
+## Migration from XmlWriter
 
 1. To each `WriteEndElement();` add argument with name of closing element, e.g. `WriteEndElement("Person");`
 2. Optionally to `WriteEndAttribute();` add argument with name of closing attribute, e.g. `WriteEndAttribute("Age");`

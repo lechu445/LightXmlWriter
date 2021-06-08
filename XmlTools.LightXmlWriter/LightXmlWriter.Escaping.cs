@@ -162,7 +162,6 @@ namespace XmlTools
       {
         case '<': this.writer.Write("&lt;"); break;
         case '>': this.writer.Write("&gt;"); break;
-        case '\"': this.writer.Write("&quot;"); break;
         case '&': this.writer.Write("&amp;"); break;
         default: this.writer.Write(c); break;
       }

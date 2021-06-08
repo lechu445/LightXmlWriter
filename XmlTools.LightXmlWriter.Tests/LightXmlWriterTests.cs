@@ -288,38 +288,38 @@ namespace XmlTools.Tests
       var sb = new StringBuilder();
       using (var subject = new LightXmlWriter(new StringWriter(sb)))
       {
-        BuchbinderBookWriter.Write(subject);
+        Simple_XML_Writer.Write(subject);
       }
       var actual = sb.ToString();
-      var expected = File.ReadAllText(Path.Combine("..", "..", "..", "Examples", "BuchbinderBookWriter.xml"));
+      var expected = File.ReadAllText(Path.Combine("..", "..", "..", "Examples", "Simple_XML_Writer.xml"));
 
       Assert.Equal(XDocument.Parse(expected).ToString(), XDocument.Parse(actual).ToString());
     }
 
     [Fact]
-    public void Writes_Supplier_Enterprise_Request()
+    public void Writes_Supplier_OTA_Standard_Request()
     {
       var sb = new StringBuilder();
       using (var subject = new LightXmlWriter(new StringWriter(sb)))
       {
-        EnterpriseBookWriter.Write(subject);
+        OTA_Standard_XML_Writer_LightXmlWriter.Write(subject);
       }
       var actual = sb.ToString();
-      var expected = File.ReadAllText(Path.Combine("..", "..", "..", "Examples", "EnterpriseBookWriter.xml"));
+      var expected = File.ReadAllText(Path.Combine("..", "..", "..", "Examples", "OTA_Standard_XML_Writer.xml"));
 
       Assert.Equal(XDocument.Parse(expected).ToString(), XDocument.Parse(actual).ToString());
     }
 
     [Fact]
-    public void XmlWriter_Writes_Supplier_Enterprise_Request()
+    public void XmlWriter_Writes_Supplier_OTA_Standard_Request()
     {
       var sb = new StringBuilder();
       using (var subject = System.Xml.XmlWriter.Create(new StringWriter(sb)))
       {
-        EnterpriseBookXmlWriter.Write(subject);
+        OTA_Standard_XML_Writer_XmlWriter.Write(subject);
       }
       var actual = sb.ToString();
-      var expected = File.ReadAllText(Path.Combine("..", "..", "..", "Examples", "EnterpriseBookWriter.xml"));
+      var expected = File.ReadAllText(Path.Combine("..", "..", "..", "Examples", "OTA_Standard_XML_Writer.xml"));
 
       Assert.Equal(XDocument.Parse(expected).ToString(), XDocument.Parse(actual).ToString());
     }
