@@ -1,12 +1,14 @@
 # LightXmlWriter
-This is a replacement of [XmlWriter](https://docs.microsoft.com/en-us/dotnet/api/system.xml.xmlwriter) which can be useful in high-performance scenarios. Therefore there are several goals to reach:
+This is a replacement of [XmlWriter](https://docs.microsoft.com/en-us/dotnet/api/system.xml.xmlwriter) which can be useful in high-performance scenarios.
+
+There are several goals to reach:
 - high performance
     - zero allocation
     - be faster than XmlWriter
     - no runtime validation
     - keep it simple (no configuration)
     - allow writing concrete types (Span<T>, int, double, DateTime, etc.)
-    - allow disable escaping values in similar way to Newtonsoft.Json
+    - allow to disable escaping values in similar way to Newtonsoft.Json
     - produce as small as possible output XML
 - easy migration from XmlWriter
 
@@ -14,12 +16,12 @@ This is a replacement of [XmlWriter](https://docs.microsoft.com/en-us/dotnet/api
 
 ### Benchmarks
 
-EnterpriseLightXmlWriterBenchmarks.LightXmlWriter_Write_Xml
+OTA_Standard_XML.LightXmlWriter_Write_Xml
 ```
-|         Method |      Mean |     Error |    StdDev |  Median | Gen 0 | Gen 1 | Gen 2 | Allocated |
-|--------------- |----------:|----------:|----------:|--------:|------:|------:|------:|----------:|
-| LightXmlWriter |  8.585 us | 0.1733 us | 0.2429 us |  8.6 us |     - |     - |     - |         - |
-|      XmlWriter | 17.923 us | 0.4765 us | 1.3671 us | 18.3 us |     - |     - |     - |    1288 B |
+|         Method |      Mean |     Error |    StdDev |  Median | Allocated |
+|--------------- |----------:|----------:|----------:|--------:|----------:|
+| LightXmlWriter |  8.585 us | 0.1733 us | 0.2429 us |  8.6 us |         - |
+|      XmlWriter | 17.923 us | 0.4765 us | 1.3671 us | 18.3 us |    1288 B |
 ```
 
 ### Similarities
@@ -29,7 +31,7 @@ For example for both writers:
 ```cs
 writer.WriteStartElement("soapenv", "Envelope", "http://schemas.xmlsoap.org/soap/envelope/");
 ```
-produces:
+produce:
 ```xml
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
 ```
@@ -54,8 +56,8 @@ Both writers keep state, so they must not be processed in parallel. LightXmlWrit
 
 * LightXmlWriter contains more overloads of methods 
 
-The overload accepts int, double, bool, ReadOnlySpan&lt;char&gt; (only in .NET Core), char[] etc.
-You can even use overload that uses Action on TextWriter, so you can have all control!
+The overloads accept int, double, bool, ReadOnlySpan&lt;char&gt; (only in .NET Core), char[] etc.
+You can even use overload that uses Action on TextWriter.
 
 * WriteEndElement must have name of the element
 
@@ -72,9 +74,7 @@ writer.WriteEndElement("Person");
 
 * LightXmlWriter does not use XmlWriterSettings
 
-It only uses its default settings - that's why it is light.
-What are the default settings?
-It does not do any validation at run-time, no pretty-print of output, no XML declaration. So it is just simple writer.
+It only uses the default settings. That means, no validation at run-time, no pretty-print of output, no XML declaration - it is just simple writer.
 
 * LightXmlWriter has better performance than XmlWriter
 
@@ -99,7 +99,7 @@ writer.WriteEndElement("Person");
 
 * LightXmlWriter does not validate & escape tag and attribute names
 
-XmlReader throws an exception in case of unescaped name
+XmlReader throws an exception in case of unescaped name.
 
 * LightXmlWriter allows write values without escaping
 
@@ -119,9 +119,9 @@ writer.WriteElementString("Code", "ABCD", escapeValue: false);
 ## Migration from XmlWriter
 
 1. To each `WriteEndElement();` add argument with name of closing element, e.g. `WriteEndElement("Person");`
-2. Optionally to `WriteEndAttribute();` add argument with name of closing attribute, e.g. `WriteEndAttribute("Age");`
-3. Optionally use more adequate method overload to reduce string allocations, e.g. `WriteAttributeString("Age", "25");` to `WriteAttributeString("Age", 25);`
-4. Optionally disable value escaping where it is not needed, e.g. `WriteAttributeString("Code", "ABC123");` to `WriteAttributeString("Code", "ABC123", escapeValue: false);`
+2. Optionally, to `WriteEndAttribute();` add argument with name of closing attribute, e.g. `WriteEndAttribute("Age");`
+3. Optionally, use more adequate method overload to reduce string allocations, e.g. `WriteAttributeString("Age", 25.ToString());` to `WriteAttributeString("Age", 25);`
+4. Optionally. disable value escaping where it is not needed, e.g. `WriteAttributeString("Code", "ABC123");` to `WriteAttributeString("Code", "ABC123", escapeValue: false);`
 5. If you see any difference in output, report it [here](https://github.com/lechu445/LightXmlWriter/issues)
 
 ## Contributing
