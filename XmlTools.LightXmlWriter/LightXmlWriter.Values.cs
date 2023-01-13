@@ -46,11 +46,7 @@ namespace XmlTools
       {
         if (escape)
         {
-#if NETSTANDARD1_3
-          WriteEscaped(new string(value, index, count), escapeValue: false);
-#else
           WriteEscaped(value.AsSpan(index, count), escapeValue: false);
-#endif
         }
         else
         {
@@ -68,11 +64,7 @@ namespace XmlTools
 
       if (escape)
       {
-#if NETSTANDARD1_3
-        WriteEscaped(new string(value, index, count), escapeValue: true);
-#else
         WriteEscaped(value.AsSpan(index, count), escapeValue: true);
-#endif
       }
       else
       {
@@ -257,6 +249,7 @@ namespace XmlTools
         }
       }
     }
+#endif
 
     public void WriteValue(ReadOnlySpan<char> value, bool escape = true)
     {
@@ -275,9 +268,7 @@ namespace XmlTools
       WriteXmlValueString(value, escape);
       this.valueWritten = true;
     }
-#endif
 
-#if !NETSTANDARD1_3
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteXmlString(ReadOnlySpan<char> value, bool escape = true)
     {
@@ -287,7 +278,7 @@ namespace XmlTools
       }
       else
       {
-        this.writer.Write(value);
+        WriteSpan(value);
       }
     }
 
@@ -300,10 +291,9 @@ namespace XmlTools
       }
       else
       {
-        this.writer.Write(value);
+        WriteSpan(value);
       }
     }
-#endif
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteXmlValueString(string? value, bool escape)
@@ -355,6 +345,22 @@ namespace XmlTools
       {
         this.writer.Write(value);
       }
+    }
+
+    private void WriteSpan(ReadOnlySpan<char> span)
+    {
+#if NETSTANDARD1_3
+      if (span.TryCopyTo(this.buffer))
+      {
+        this.writer.Write(buffer, 0, span.Length);
+      }
+      else
+      {
+        this.writer.Write(span.ToArray());
+      }
+#else
+      this.writer.Write(span);
+#endif
     }
   }
 }

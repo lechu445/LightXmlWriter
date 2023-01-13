@@ -54,7 +54,7 @@ namespace XmlTools.Tests.TestsForMethods
         sb.Clear();
 
         writer.WriteStartElement("root");
-        writer.WriteValue(null);
+        writer.WriteValue((string)null);
         writer.WriteEndElement("root");
         Assert.Equal("<root></root>", sb.ToString());
         sb.Clear();
@@ -146,7 +146,7 @@ namespace XmlTools.Tests.TestsForMethods
         sb.Clear();
 
         writer.WriteStartElement("root");
-        writer.WriteValue(null);
+        writer.WriteValue((string)null);
         writer.WriteEndElement("prefix", "root");
         Assert.Equal("<root></prefix:root>", sb.ToString());
         sb.Clear();

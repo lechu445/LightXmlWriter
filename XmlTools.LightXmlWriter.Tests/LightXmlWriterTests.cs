@@ -215,7 +215,7 @@ namespace XmlTools.Tests
       var sb = new StringBuilder();
       using (var subject = new LightXmlWriter(new StringWriter(sb)))
       {
-        subject.WriteElementString("Person", null);
+        subject.WriteElementString("Person", (string)null);
       }
       Assert.Equal("<Person/>", sb.ToString());
     }

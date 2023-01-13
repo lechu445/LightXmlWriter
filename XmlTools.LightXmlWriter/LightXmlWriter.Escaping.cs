@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 
 namespace XmlTools
 {
@@ -11,7 +10,6 @@ namespace XmlTools
     private static readonly char[] EscapeChars = new[] { '<', '>', '\"', '\'', '&' };
     private static readonly char[] EscapeCharsForValue = new[] { '<', '>', '\'', '&' };
 
-#if !NETSTANDARD1_3
     private void WriteEscaped(ReadOnlySpan<char> str, bool escapeValue)
     {
       if (str.IsEmpty)
@@ -31,12 +29,12 @@ namespace XmlTools
 
         if (index == -1)
         {
-          this.writer.Write(str);
+          WriteSpan(str);
           return;
         }
         else
         {
-          this.writer.Write(str.Slice(0, index));
+          WriteSpan(str.Slice(0, index));
           if (escapeValue)
           {
             WriteEscapeSequenceForValue(str[index]);
@@ -50,7 +48,6 @@ namespace XmlTools
         }
       }
     }
-#endif
 
     private void WriteEscaped(string? str, bool escapeValue)
     {
@@ -86,18 +83,9 @@ namespace XmlTools
         else
         {
           foundAnyEscapeChar = true;
-#if NETSTANDARD1_3
-          if (TryCopyToBuffer(str, newIndex, index - newIndex))
-          {
-            this.writer.Write(this.buffer, 0, index - newIndex);
-          }
-          else
-          {
-            this.writer.Write(str.Substring(newIndex, index - newIndex));
-          }
-#else
-          this.writer.Write(str.AsSpan(newIndex, index - newIndex));
-#endif
+
+          WriteSpan(str.AsSpan(newIndex, index - newIndex));
+
           if (escapeValue)
           {
             WriteEscapeSequenceForValue(str[index]);
@@ -114,35 +102,8 @@ namespace XmlTools
 
     private void WriteEscaped(string str, int newIndex)
     {
-#if NETSTANDARD1_3
-      if (TryCopyToBuffer(str, newIndex, str.Length - newIndex))
-      {
-        this.writer.Write(this.buffer, 0, str.Length - newIndex);
-      }
-      else
-      {
-        this.writer.Write(str.Substring(newIndex, str.Length - newIndex));
-      }
-#else
-      this.writer.Write(str.AsSpan(newIndex, str.Length - newIndex));
-#endif
+      WriteSpan(str.AsSpan(newIndex, str.Length - newIndex));
     }
-
-#if NETSTANDARD1_3
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool TryCopyToBuffer(string str, int startIndex, int count)
-    {
-      if (count > this.buffer.Length)
-      {
-        return false;
-      }
-      else
-      {
-        str.CopyTo(startIndex, this.buffer, 0, count);
-        return true;
-      }
-    }
-#endif
 
     private void WriteEscapeSequence(char c)
     {

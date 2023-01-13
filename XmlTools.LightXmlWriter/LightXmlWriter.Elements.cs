@@ -159,7 +159,6 @@ namespace XmlTools
       this.writingElement = false;
     }
 
-#if !NETSTANDARD1_3
     public void WriteElementString(string name, ReadOnlySpan<char> value, bool escapeValue = true)
     {
       WriteStartElement(name);
@@ -171,7 +170,6 @@ namespace XmlTools
       this.valueWritten = true;
       this.writingElement = false;
     }
-#endif
 
     public void WriteElementString(string? prefix, string name, string? ns, string? value, bool escapeValue = true)
     {
