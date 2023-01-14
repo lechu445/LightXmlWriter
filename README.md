@@ -56,7 +56,7 @@ Both writers keep state, so they must not be processed in parallel. LightXmlWrit
 
 * LightXmlWriter contains more overloads of methods 
 
-The overloads accept int, double, bool, ReadOnlySpan&lt;char&gt; (only in .NET Core), char[] etc.
+The overloads accept int, double, bool, ReadOnlySpan&lt;char&gt;, char[] etc.
 You can even use overload that uses Action on TextWriter.
 
 * WriteEndElement must have name of the element
@@ -135,5 +135,4 @@ Please use it carefully. LightXmlWriter can produce an invalid XML, so write tes
 
 ## Requirements
 
-Framework compatible with .NET Standard 1.3 (.NET Core 1.0, .NET Framework 4.6, Mono 4.6) or higher.  
-Currently ReadOnlySpan&lt;char&gt; overloads are only available in .NET Core 2.1 and .NET 5.0 builds.
+Framework compatible with .NET Standard 1.3 (.NET Core 1.0, .NET Framework 4.6, Mono 4.6) or higher.
