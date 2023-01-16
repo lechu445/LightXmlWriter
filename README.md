@@ -121,12 +121,12 @@ writer.WriteElementString("Code", "ABCD", escapeValue: false);
 1. To each `WriteEndElement();` add argument with name of closing element, e.g. `WriteEndElement("Person");`
 2. Optionally, to `WriteEndAttribute();` add argument with name of closing attribute, e.g. `WriteEndAttribute("Age");`
 3. Optionally, use more adequate method overload to reduce string allocations, e.g. `WriteAttributeString("Age", 25.ToString());` to `WriteAttributeString("Age", 25);`
-4. Optionally. disable value escaping where it is not needed, e.g. `WriteAttributeString("Code", "ABC123");` to `WriteAttributeString("Code", "ABC123", escapeValue: false);`
-5. If you see any difference in output, report it [here](https://github.com/lechu445/LightXmlWriter/issues)
+4. Optionally, disable value escaping where it is not needed, e.g. `WriteAttributeString("Code", "ABC123");` to `WriteAttributeString("Code", "ABC123", escapeValue: false);`
+5. If you see any difference in produced XML, report it [here](https://github.com/lechu445/LightXmlWriter/issues)
 
 ## Contributing
 
-You are welcome to help with this package. There are also a lot to do: write more benchmark tests, more tests, more overloads, finding bugs, making optimisations of existing code.
+You are welcome to help with this package. There is also a lot to do, like write more benchmark tests, more tests, more overloads, finding bugs, making optimizations of the existing code.
 
 ## Acknowledgments
 
