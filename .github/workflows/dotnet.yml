@@ -30,13 +30,4 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-
-    - name: Continuous Benchmark
-      uses: benchmark-action/github-action-benchmark@v1.15.0
-      with:
-        name: Run BenchmarkDotNet
-        tool: 'benchmarkdotnet'
-        output-file-path: output.txt
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        auto-push: true
       
