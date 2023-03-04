@@ -25,7 +25,7 @@ jobs:
         with:
           name: Benchmark.Net Benchmark
           tool: 'benchmarkdotnet'
-          output-file-path: XmlTools.LightXmlWriter.Tests/BenchmarkDotNet.Artifacts/results/Sample.Benchmarks-report-full-compressed.json
+          output-file-path: XmlTools.LightXmlWriter.Tests/BenchmarkDotNet.Artifacts/results/XmlTools.Benchmarks.SimpleBenchmarks-report-full-compressed.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
           alert-threshold: '200%'
