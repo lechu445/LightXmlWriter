@@ -18,7 +18,7 @@ jobs:
         with:
           dotnet-version: '3.1.x'
       - name: Run benchmark
-        run: cd XmlTools.LightXmlWriter.Tests && dotnet run --framework netcoreapp3.1 --exporters json --filter '*'
+        run: cd XmlTools.LightXmlWriter.Tests && dotnet run -c Release --framework netcoreapp3.1 --exporters json --filter '*'
 
       - name: Store benchmark result
         uses: rhysd/github-action-benchmark@v1
