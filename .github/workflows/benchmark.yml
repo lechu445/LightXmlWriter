@@ -18,7 +18,7 @@ jobs:
         with:
           dotnet-version: '6.0.101'  # SDK Version to use. keep in line with examples/benchmarkdotnet/global.json
       - name: Run benchmark
-        run: cd XmlTools.LightXmlWriter.Tests && dotnet run --framework net6.0 --exporters json --filter '*'
+        run: cd XmlTools.LightXmlWriter.Tests && dotnet run --framework netcoreapp3.1 --exporters json --filter '*'
 
       - name: Store benchmark result
         uses: rhysd/github-action-benchmark@v1
