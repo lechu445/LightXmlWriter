@@ -30,3 +30,6 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
+    - name: Continuous Benchmark
+      uses: benchmark-action/github-action-benchmark@v1.15.0
