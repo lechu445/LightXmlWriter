@@ -33,3 +33,10 @@ jobs:
 
     - name: Continuous Benchmark
       uses: benchmark-action/github-action-benchmark@v1.15.0
+      with:
+        name: Run BenchmarkDotNet
+        tool: 'benchmarkdotnet'
+        output-file-path: output.txt
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+      
