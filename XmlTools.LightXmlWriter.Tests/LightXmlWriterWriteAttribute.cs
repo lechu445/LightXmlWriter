@@ -29,8 +29,8 @@ namespace XmlTools.Tests
       Assert.Equal("<Person attr=\"test\"/>", WriteValue(w => w.WriteValue("test", (wr, state) => wr.Write(state))));
       Assert.Equal("<Person attr=\"test\"/>", WriteValue(w => w.WriteValue("test".ToCharArray(), 0, "test".Length)));
 
-#if NETCOREAPP3_1
-            Assert.Equal("<Person attr=\"-1.7976931348623157E+308\"/>", WriteValue(w => w.WriteValue(double.MinValue)));
+#if NET7_0_OR_GREATER
+      Assert.Equal("<Person attr=\"-1.7976931348623157E+308\"/>", WriteValue(w => w.WriteValue(double.MinValue)));
 #else
       Assert.Equal("<Person attr=\"-1.79769313486232E+308\"/>", WriteValue(w => w.WriteValue(double.MinValue)));
 #endif

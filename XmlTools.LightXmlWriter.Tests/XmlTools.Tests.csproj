@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net462</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;net7.0;net462</TargetFrameworks>
     <GenerateProgramFile>false</GenerateProgramFile>
     <OutputType>Exe</OutputType>
     <StartupObject>XmlTools.Test.Program</StartupObject>

@@ -31,7 +31,7 @@ namespace XmlTools.Tests
       Assert.Equal("<Person>te&amp;st</Person>", WriteValue(w => w.WriteValue("te&st".ToCharArray(), 0, "te&st".Length)));
       Assert.Equal("<Person>te&st</Person>", WriteValue(w => w.WriteValue("te&st".ToCharArray(), 0, "te&st".Length, escape: false)));
 
-#if NETCOREAPP3_1
+#if NET7_0_OR_GREATER
       Assert.Equal("<Person>-1.7976931348623157E+308</Person>", WriteValue(w => w.WriteValue(double.MinValue)));
 #else
       Assert.Equal("<Person>-1.79769313486232E+308</Person>", WriteValue(w => w.WriteValue(double.MinValue)));

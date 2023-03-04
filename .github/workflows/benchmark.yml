@@ -16,9 +16,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.x'
+          dotnet-version: '7.0.x'
       - name: Run benchmark
-        run: cd XmlTools.LightXmlWriter.Tests && dotnet run -c Release --framework netcoreapp3.1 --exporters json --filter '*'
+        run: cd XmlTools.LightXmlWriter.Tests && dotnet run -c Release --framework net7.0 --exporters json --filter '*'
 
       - name: Combine benchmark results
         run: dotnet tool install -g dotnet-script && cd XmlTools.LightXmlWriter.Tests && dotnet script combine-bechmarks.csx
