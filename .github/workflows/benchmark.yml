@@ -20,6 +20,9 @@ jobs:
       - name: Run benchmark
         run: cd XmlTools.LightXmlWriter.Tests && dotnet run -c Release --framework netcoreapp3.1 --exporters json --filter '*'
 
+      - name: Combine benchmark results
+        run: dotnet tool install -g dotnet-script && cd XmlTools.LightXmlWriter.Tests && dotnet script combine-bechmarks.csx
+
       - name: Store benchmark result
         uses: rhysd/github-action-benchmark@v1
         with:
