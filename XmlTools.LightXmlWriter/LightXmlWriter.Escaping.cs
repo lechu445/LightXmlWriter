@@ -7,8 +7,13 @@ namespace XmlTools
   /// </summary>
   public sealed partial class LightXmlWriter
   {
+#if NET8_0_OR_GREATER
+    private static readonly System.Buffers.SearchValues<char> EscapeChars = System.Buffers.SearchValues.Create("<>\"'&");
+    private static readonly System.Buffers.SearchValues<char> EscapeCharsForValue = System.Buffers.SearchValues.Create("<>'&");
+#else
     private static readonly char[] EscapeChars = new[] { '<', '>', '\"', '\'', '&' };
     private static readonly char[] EscapeCharsForValue = new[] { '<', '>', '\'', '&' };
+#endif
 
     private void WriteEscaped(ReadOnlySpan<char> str, bool escapeValue)
     {
@@ -20,7 +25,7 @@ namespace XmlTools
       int index; // Pointer into the string that indicates the location of the current '&' character
       int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
 
-      char[] escapeChars = escapeValue ? EscapeCharsForValue : EscapeChars;
+      var escapeChars = escapeValue ? EscapeCharsForValue : EscapeChars;
 
       while (true)
       {
@@ -61,11 +66,11 @@ namespace XmlTools
 
       bool foundAnyEscapeChar = false;
 
-      char[] escapeChars = escapeValue ? EscapeCharsForValue : EscapeChars;
+      var escapeChars = escapeValue ? EscapeCharsForValue : EscapeChars;
 
       while (true)
       {
-        index = str.IndexOfAny(escapeChars, newIndex);
+        index = str.AsSpan(newIndex).IndexOfAny(escapeChars);
 
         if (index == -1)
         {
@@ -84,8 +89,9 @@ namespace XmlTools
         {
           foundAnyEscapeChar = true;
 
-          WriteSpan(str.AsSpan(newIndex, index - newIndex));
+          WriteSpan(str.AsSpan(newIndex, index));
 
+          index = index + newIndex;
           if (escapeValue)
           {
             WriteEscapeSequenceForValue(str[index]);

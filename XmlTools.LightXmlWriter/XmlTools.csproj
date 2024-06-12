@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;netstandard2.1;netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
+    <TargetFrameworks>netstandard1.3;netstandard2.1;netcoreapp2.1;netcoreapp2.2;net8.0</TargetFrameworks>
     <PackageId>LightXmlWriter</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors>lechu445</Authors>
